@@ -1,0 +1,80 @@
+.App {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.btn {
+  background-color: #4285f4;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #3367d6;
+}
+
+.devices-container {
+  margin: 20px 0;
+}
+
+.device-list {
+  margin-top: 20px;
+}
+
+.device-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.camera-container {
+  margin: 20px 0;
+}
+
+.webcam {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.camera-controls, .result-controls {
+  margin: 15px 0;
+}
+
+.result-container {
+  margin: 30px 0;
+}
+
+.captured-img {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 10px 0;
+}
+
+@media (max-width: 600px) {
+  .device-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
