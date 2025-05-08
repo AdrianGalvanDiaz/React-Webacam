@@ -9,7 +9,7 @@ function App() {
   const [imgSrc, setImgSrc] = useState(null);
   const webcamRef = useRef(null);
 
-  // Función para obtener los dispositivos disponibles
+  // Función para obtener los dispositivos disponibless
   const handleDevices = useCallback(
     mediaDevices => {
       // Filtrar solo videoinputs (webcams)
