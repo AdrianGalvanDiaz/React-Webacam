@@ -78,3 +78,53 @@ h1 {
     gap: 10px;
   }
 }
+
+.resolution-check {
+  display: inline-block;
+  margin-left: 10px;
+  background-color: rgba(0, 128, 0, 0.7);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+}
+
+.check-icon {
+  font-weight: bold;
+  color: #00ff00;
+}
+
+.resolution-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-resolution {
+  background-color: #7e57c2;
+  margin: 5px;
+}
+
+.btn-resolution:hover {
+  background-color: #673ab7;
+}
+
+.btn-resolution-active {
+  background-color: #512da8;
+  border: 2px solid #fff;
+}
+
+/* Hacer que los botones sean responsivos */
+@media (max-width: 768px) {
+  .resolution-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn-resolution {
+    width: 90%;
+    max-width: 300px;
+  }
+}
