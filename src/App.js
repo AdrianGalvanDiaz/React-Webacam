@@ -86,13 +86,13 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Aplicación de Webcam</h1>
+      <h1>Coppel Captura</h1>
       
       {/* Botón para listar dispositivos */}
       {!isCameraEnabled && (
         <div className="devices-container">
           <button onClick={loadDevices} className="btn">
-            Listar dispositivos disponibles
+            Haz una nueva captura
           </button>
           
           <div className="device-list">
