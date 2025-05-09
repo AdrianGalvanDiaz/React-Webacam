@@ -3,6 +3,10 @@ import Webcam from 'react-webcam';
 import './App.css';
 
 function App() {
+  // Estado para la navegación
+  const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
+  
+  // Estados de la cámara
   const [devices, setDevices] = useState([]);
   const [selectedDeviceId, setSelectedDeviceId] = useState(null);
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
@@ -16,6 +20,30 @@ function App() {
   ]);
   const [selectedResolution, setSelectedResolution] = useState(availableResolutions[2]); // Iniciar con Full HD
   const webcamRef = useRef(null);
+  
+  // Estados para la página de resultados
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const [predictionData, setPredictionData] = useState({
+    id: `ID-${Date.now()}`,
+    nombre: "ADRIAN",
+    segundo_nombre: "",
+    apellido_paterno: "GALVAN",
+    apellido_materno: "DIAZ",
+    direccion1: "CERRO EL NABO 312",
+    direccion2: "COLPRIVADA JURIQUILLA 76226",
+    direccion3: "QUERETARO, QRO",
+    calle: "CERRO EL NABO",
+    numero_ext: "312",
+    numero_int: "",
+    colonia: "COLPRIVADA JURIQUILLA",
+    codigo_postal: "76226",
+    municipio: "QUERETARO",
+    estado: "QRO"
+  });
+  
+  // Copia de los datos para la edición
+  const [editedData, setEditedData] = useState({...predictionData});
 
   // Función para obtener los dispositivos disponibles
   const handleDevices = useCallback(
@@ -52,17 +80,48 @@ function App() {
   const capture = useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImgSrc(imageSrc);
+    // Simular que enviamos la imagen al modelo de IA y obtenemos resultados
+    // En una aplicación real, aquí harías una llamada a la API
+    // Después de capturar, iremos a la página de resultados
+    setCurrentPage('resultado');
   }, [webcamRef, setImgSrc]);
 
-  // Guardar la imagen
-  const saveImage = () => {
-    if (!imgSrc) return;
-    
-    // Crear un elemento <a> para descargar la imagen
-    const link = document.createElement('a');
-    link.href = imgSrc;
-    link.download = `photo-${new Date().toISOString()}.png`;
-    link.click();
+  // Función para regresar a tomar la foto
+  const retakePhoto = () => {
+    setImgSrc(null);
+    setIsSaved(false);
+    setCurrentPage('captura');
+  };
+
+  // Funciones para manejar la edición de datos
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditedData({...predictionData});
+  };
+
+  const handleDoneEditing = () => {
+    setIsEditing(false);
+    setPredictionData({...editedData});
+  };
+
+  const handleSave = () => {
+    setIsSaved(true);
+    // Aquí iría el código para enviar los datos al servidor
+    console.log("Datos guardados:", predictionData);
+  };
+
+  const handleContinue = () => {
+    // Aquí iría la lógica para continuar al siguiente paso
+    alert("Continuando al siguiente paso...");
+  };
+
+  // Manejar cambios en los campos editables
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedData({
+      ...editedData,
+      [name]: value
+    });
   };
 
   // Obtener la resolución de la cámara
@@ -84,8 +143,9 @@ function App() {
     }
   }, [isCameraEnabled, webcamRef, selectedResolution]);
 
-  return (
-    <div className="App">
+  // Renderizar la página de captura
+  const renderCapturePage = () => (
+    <div className="capture-page">
       <h1>Coppel Captura</h1>
       
       {/* Botón para listar dispositivos */}
@@ -160,18 +220,104 @@ function App() {
           </div>
         </div>
       )}
+    </div>
+  );
 
-      {/* Imagen capturada */}
-      {imgSrc && (
-        <div className="result-container">
-          <h2>Foto capturada:</h2>
-          <img src={imgSrc} alt="Captura de webcam" className="captured-img" />
-          <div className="result-controls">
-            <button onClick={saveImage} className="btn">Guardar imagen</button>
-            <button onClick={() => setImgSrc(null)} className="btn">Descartar</button>
+  // Renderizar la página de resultados con el nuevo layout
+  const renderResultPage = () => (
+    <div className="result-page">
+      <h1>Revisa que los datos sean correctos!</h1>
+      
+      <div className="result-container">
+        <div className="data-section">
+          <h2>Datos Detectados</h2>
+          
+          {/* Contenedor de datos en dos columnas */}
+          <div className="json-display">
+            {/* ID como elemento especial */}
+            <div className="json-field id-field">
+              <span className="json-key">ID:</span>
+              <span className="json-value">{predictionData.id}</span>
+            </div>
+            
+            {/* Contenedor de dos columnas para el resto de campos */}
+            <div className="json-grid">
+              {Object.entries(predictionData).map(([key, value]) => {
+                if (key === 'id') return null;
+                
+                return (
+                  <div className="json-field" key={key}>
+                    <span className="json-key">{key.replace(/_/g, ' ')}:</span>
+                    {isEditing ? (
+                      <input
+                        type="text"
+                        name={key}
+                        value={editedData[key]}
+                        onChange={handleInputChange}
+                        className="json-input"
+                      />
+                    ) : (
+                      <span className="json-value">{value}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Botones de acción fuera del contenedor JSON */}
+          <div className="data-actions">
+            {!isEditing && !isSaved && (
+              <button onClick={handleEdit} className="btn btn-edit">
+                Editar
+              </button>
+            )}
+            
+            {isEditing && (
+              <button onClick={handleDoneEditing} className="btn btn-done">
+                Listo!
+              </button>
+            )}
+            
+            {!isEditing && (
+              <button 
+                onClick={handleSave} 
+                className="btn btn-save"
+                disabled={isSaved}>
+                Salvar
+              </button>
+            )}
           </div>
         </div>
-      )}
+        
+        <div className="image-section">
+          <h2>Imagen Capturada</h2>
+          {imgSrc && (
+            <img src={imgSrc} alt="Captura de webcam" className="result-img" />
+          )}
+        </div>
+      </div>
+      
+      {/* Botones de navegación */}
+      <div className="navigation-buttons">
+        <button onClick={retakePhoto} className="btn btn-retake">
+          Repetir Foto
+        </button>
+        
+        <button 
+          onClick={handleContinue} 
+          className="btn btn-continue"
+          disabled={!isSaved}>
+          Continuar
+        </button>
+      </div>
+    </div>
+  );
+
+  // Renderizar la página correspondiente según el estado
+  return (
+    <div className="App">
+      {currentPage === 'captura' ? renderCapturePage() : renderResultPage()}
     </div>
   );
 }
