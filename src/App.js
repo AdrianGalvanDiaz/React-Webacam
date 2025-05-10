@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Webcam from 'react-webcam';
+import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -45,6 +46,11 @@ function App() {
   // Copia de los datos para la edición
   const [editedData, setEditedData] = useState({...predictionData});
 
+  // Estados para el progreso de upload
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState(null);
+
   // Función para obtener los dispositivos disponibles
   const handleDevices = useCallback(
     mediaDevices => {
@@ -76,21 +82,86 @@ function App() {
     return resolution.height >= 1080 || (resolution.width >= 1920 && resolution.height >= 1080);
   };
 
-  // Capturar imagen
-  const capture = useCallback(() => {
+  // Capturar imagen con funcionalidad de upload
+  const capture = useCallback(async () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImgSrc(imageSrc);
-    // Simular que enviamos la imagen al modelo de IA y obtenemos resultados
-    // En una aplicación real, aquí harías una llamada a la API
+    setUploading(true);
+    setUploadError(null);
+    setUploadProgress(0);
+    
+    try {
+      console.log('=== INICIO DEL PROCESO DE UPLOAD ===');
+      console.log('1. Imagen capturada, tamaño del data URL:', imageSrc.length);
+      
+      // Convertir el data URL a un Blob      
+      // Convertir el data URL a un Blob
+      const response = await fetch(imageSrc);
+      const blob = await response.blob();
+      console.log('2. Blob creado, tamaño:', blob.size, 'bytes');
+
+      
+      // Crear el FormData
+      const formData = new FormData();
+      formData.append('image', blob, 'capture.jpg');
+      formData.append('timestamp', new Date().toISOString());
+      formData.append('resolution', `${selectedResolution.width}x${selectedResolution.height}`);
+      formData.append('deviceId', selectedDeviceId);
+      console.log('3. FormData creado con:');
+
+      for (let [key, value] of formData.entries()) {
+        console.log(`   - ${key}:`, value instanceof Blob ? `Archivo (${value.size} bytes)` : value);
+      }
+      
+      console.log('4. Enviando POST a: https://eowon20jplqlr8y.m.pipedream.net');
+            
+      // Enviar el POST
+      const uploadResponse = await axios.post('https://eowon20jplqgr8y.m.pipedream.net', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+          console.log(`Progreso del upload: ${percentCompleted}%`);
+        }
+      });
+      
+      console.log('Upload exitoso:', uploadResponse.data);
+      console.log('   - Status:', uploadResponse.status);
+      console.log('   - Headers:', uploadResponse.headers);
+      console.log('   - Data:', uploadResponse.data);      
+      setUploading(false);
+      
+      // Si quieres guardar la respuesta del servidor
+      // Por ejemplo, si te devuelve un ID o URL de la imagen
+      if (uploadResponse.data.imageUrl) {
+        // Podrías guardar la URL devuelta por el servidor
+        // setImgSrc(uploadResponse.data.imageUrl);
+      }
+      
+    } catch (error) {
+      console.error('ERROR EN UPLOAD:');
+      console.error('   - Mensaje:', error.message);
+      console.error('   - Response:', error.response?.data);
+      console.error('   - Status:', error.response?.status);
+      setUploadError(error.message);
+      setUploading(false);
+    }
+    
     // Después de capturar, iremos a la página de resultados
     setCurrentPage('resultado');
-  }, [webcamRef, setImgSrc]);
+  }, [webcamRef, setImgSrc, selectedResolution, selectedDeviceId]);
 
   // Función para regresar a tomar la foto
   const retakePhoto = () => {
     setImgSrc(null);
     setIsSaved(false);
     setCurrentPage('captura');
+    // Limpiar estados de upload
+    setUploading(false);
+    setUploadProgress(0);
+    setUploadError(null);
   };
 
   // Funciones para manejar la edición de datos
@@ -199,10 +270,39 @@ function App() {
             )}
           </div>
           
+          {/* Indicadores de progreso de upload */}
+          {uploading && (
+            <div className="upload-progress">
+              <p>Subiendo imagen... {uploadProgress}%</p>
+              <div className="progress-bar">
+                <div 
+                  className="progress-bar-fill" 
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+
+          {uploadError && (
+            <div className="upload-error">
+              <p>Error: {uploadError}</p>
+            </div>
+          )}
+          
           {/* Controles principales */}
           <div className="camera-controls">
-            <button onClick={capture} className="btn">Tomar foto</button>
-            <button onClick={() => setIsCameraEnabled(false)} className="btn">
+            <button 
+              onClick={capture} 
+              className="btn"
+              disabled={uploading}
+            >
+              {uploading ? 'Subiendo...' : 'Tomar foto'}
+            </button>
+            <button 
+              onClick={() => setIsCameraEnabled(false)} 
+              className="btn"
+              disabled={uploading}
+            >
               Cambiar cámara
             </button>
           </div>
@@ -213,7 +313,9 @@ function App() {
               <button 
                 key={index} 
                 onClick={() => changeResolution(res)} 
-                className={`btn btn-resolution ${selectedResolution.width === res.width && selectedResolution.height === res.height ? 'btn-resolution-active' : ''}`}>
+                className={`btn btn-resolution ${selectedResolution.width === res.width && selectedResolution.height === res.height ? 'btn-resolution-active' : ''}`}
+                disabled={uploading}
+              >
                 {res.label}
               </button>
             ))}
