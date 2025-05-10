@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import './App.css';
 
 function App() {
-  // Estado para la navegación
+  // Estado para la navegación , prueba
   const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
   
   // Estados de la cámara
