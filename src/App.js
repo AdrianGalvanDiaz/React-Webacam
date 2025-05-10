@@ -4,7 +4,7 @@ import './App.css';
 
 function App() {
   // Estado para la navegación , prueba
-  const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
+  const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado' aylen
   
   // Estados de la cámara
   const [devices, setDevices] = useState([]);
