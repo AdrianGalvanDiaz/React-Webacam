@@ -94,57 +94,49 @@ function App() {
       console.log('=== INICIO DEL PROCESO DE UPLOAD ===');
       console.log('1. Imagen capturada, tamaño del data URL:', imageSrc.length);
       
-      // Convertir el data URL a un Blob      
       // Convertir el data URL a un Blob
       const response = await fetch(imageSrc);
       const blob = await response.blob();
       console.log('2. Blob creado, tamaño:', blob.size, 'bytes');
-
       
       // Crear el FormData
       const formData = new FormData();
-      formData.append('image', blob, 'capture.jpg');
-      formData.append('timestamp', new Date().toISOString());
-      formData.append('resolution', `${selectedResolution.width}x${selectedResolution.height}`);
-      formData.append('deviceId', selectedDeviceId);
-      console.log('3. FormData creado con:');
-
-      for (let [key, value] of formData.entries()) {
-        console.log(`   - ${key}:`, value instanceof Blob ? `Archivo (${value.size} bytes)` : value);
-      }
+      // CAMBIO IMPORTANTE: 'image' -> 'file' para que coincida con FastAPI
+      formData.append('file', blob, 'capture.jpg');
       
-      console.log('4. Enviando POST a: https://eowon20jplqlr8y.m.pipedream.net');
-            
+      console.log('3. FormData creado con archivo');
+      console.log('4. Enviando POST a: http://34.123.23.160:8000/predecir_ine');
+      
       // Enviar el POST
-      const uploadResponse = await axios.post('https://eowon20jplqgr8y.m.pipedream.net', formData, {
+      const uploadResponse = await axios.post('http://34.123.23.160:8000/predecir_ine', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setUploadProgress(percentCompleted);
-          console.log(`Progreso del upload: ${percentCompleted}%`);
+          console.log(`5. Progreso del upload: ${percentCompleted}%`);
         }
       });
       
-      console.log('Upload exitoso:', uploadResponse.data);
+      console.log('6. Upload exitoso!');
       console.log('   - Status:', uploadResponse.status);
-      console.log('   - Headers:', uploadResponse.headers);
-      console.log('   - Data:', uploadResponse.data);      
-      setUploading(false);
+      console.log('   - Data:', uploadResponse.data);
       
-      // Si quieres guardar la respuesta del servidor
-      // Por ejemplo, si te devuelve un ID o URL de la imagen
-      if (uploadResponse.data.imageUrl) {
-        // Podrías guardar la URL devuelta por el servidor
-        // setImgSrc(uploadResponse.data.imageUrl);
-      }
+      // ACTUALIZAR predictionData con la respuesta del servidor
+      setPredictionData({
+        id: `ID-${Date.now()}`,
+        ...uploadResponse.data
+      });
+      
+      setUploading(false);
       
     } catch (error) {
       console.error('ERROR EN UPLOAD:');
       console.error('   - Mensaje:', error.message);
       console.error('   - Response:', error.response?.data);
       console.error('   - Status:', error.response?.status);
+      console.error('   - Headers:', error.response?.headers);
       setUploadError(error.message);
       setUploading(false);
     }
