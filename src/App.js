@@ -97,6 +97,8 @@ function App() {
   const handleEdit = () => {
     setIsEditing(true);
     setEditedData({...predictionData});
+    // Al entrar en edición, resetear el estado de guardado
+    setIsSaved(false);
   };
 
   const handleDoneEditing = () => {
@@ -267,7 +269,8 @@ function App() {
           
           {/* Botones de acción fuera del contenedor JSON */}
           <div className="data-actions">
-            {!isEditing && !isSaved && (
+            {/* El botón Editar SIEMPRE está presente */}
+            {!isEditing && (
               <button onClick={handleEdit} className="btn btn-edit">
                 Editar
               </button>
