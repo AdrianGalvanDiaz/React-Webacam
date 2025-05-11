@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import Webcam from 'react-webcam';
+import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -32,21 +33,21 @@ function App() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [predictionData, setPredictionData] = useState({
-    id: `ID-${Date.now()}`,
-    nombre: "ADRIAN",
-    segundo_nombre: "",
-    apellido_paterno: "GALVAN",
-    apellido_materno: "DIAZ",
-    direccion1: "CERRO EL NABO 312",
-    direccion2: "COLPRIVADA JURIQUILLA 76226",
-    direccion3: "QUERETARO, QRO",
-    calle: "CERRO EL NABO",
-    numero_ext: "312",
-    numero_int: "",
-    colonia: "COLPRIVADA JURIQUILLA",
-    codigo_postal: "76226",
-    municipio: "QUERETARO",
-    estado: "QRO"
+    id: '',
+    nombre: '',
+    segundo_nombre: '',
+    apellido_paterno: '',
+    apellido_materno: '',
+    direccion1: '',
+    direccion2: '',
+    direccion3: '',
+    calle: '',
+    numero_ext: '',
+    numero_int: '',
+    colonia: '',
+    codigo_postal: '',
+    municipio: '',
+    estado: ''
   });
 
   // Función para capturar imagen con Canvas a resolución completa
@@ -73,6 +74,11 @@ function App() {
   // Copia de los datos para la edición
   const [editedData, setEditedData] = useState({...predictionData});
 
+    // Estados para el progreso de upload
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState(null);
+  
   // Función para obtener los dispositivos disponibles
   const handleDevices = useCallback(
     mediaDevices => {
@@ -139,21 +145,184 @@ function App() {
     }, 100);
   };
 
-  // Capturar imagen
-  const capture = useCallback(() => {
+  // Función para extraer el resultado correcto de la respuesta
+  const extractResultData = (serverResponse) => {
+    console.log('=== EXTRAYENDO DATOS DEL SERVIDOR ===');
+    console.log('serverResponse completo:', serverResponse);
+
+    // Intentar varias rutas posibles para encontrar los datos
+    let resultData = null;
+
+    // Ruta 1: uploadResponse.data
+    if (serverResponse && typeof serverResponse === 'object') {
+      console.log('Intentando ruta 1: serverResponse directamente');
+
+      // Verificar si los campos están directamente en serverResponse
+      if (serverResponse.nombre || serverResponse.apellido_paterno) {
+        resultData = serverResponse;
+      }
+      // Verificar si los campos están en serverResponse.resultado
+      else if (serverResponse.resultado && typeof serverResponse.resultado === 'object') {
+        console.log('Intentando ruta 2: serverResponse.resultado');
+
+        // Si resultado es un objeto simple con los campos
+        if (serverResponse.resultado.nombre || serverResponse.resultado.apellido_paterno) {
+          resultData = serverResponse.resultado;
+        }
+        // Si resultado es un array, tomar el primer elemento
+        else if (Array.isArray(serverResponse.resultado) && serverResponse.resultado.length > 0) {
+          resultData = serverResponse.resultado[0];
+        }
+        // Si resultado tiene otro nivel más (Data.resultado)
+        else if (serverResponse.resultado.Data && serverResponse.resultado.Data.resultado) {
+          console.log('Intentando ruta 3: serverResponse.resultado.Data.resultado');
+          resultData = serverResponse.resultado.Data.resultado;
+        }
+      }
+    }
+
+    console.log('Datos extraídos:', resultData);
+    return resultData;
+  };
+
+  // Capturar imagen con funcionalidad de upload
+  const capture = useCallback(async () => {
     const imageSrc = captureWithCanvas();
     setImgSrc(imageSrc);
-    // Simular que enviamos la imagen al modelo de IA y obtenemos resultados
-    // En una aplicación real, aquí harías una llamada a la API
-    // Después de capturar, iremos a la página de resultados
-    setCurrentPage('resultado');
-  }, [webcamRef, setImgSrc]);
+    setUploading(true);
+    setUploadError(null);
+    setUploadProgress(0);
+
+    try {
+      console.log('=== INICIO DEL PROCESO DE UPLOAD ===');
+      console.log('1. Imagen capturada, tamaño del data URL:', imageSrc.length);
+
+      // Convertir el data URL a un Blob
+      const response = await fetch(imageSrc);
+      const blob = await response.blob();
+      console.log('2. Blob creado, tamaño:', blob.size, 'bytes');
+
+      // Crear el FormData
+      const formData = new FormData();
+      // CAMBIO IMPORTANTE: 'image' -> 'file' para que coincida con FastAPI
+      formData.append('file', blob, 'capture.jpg');
+
+      console.log('3. FormData creado con archivo');
+      console.log('4. Enviando POST a: http://35.184.12.114:8000/ai/predecir_ine_cpu');
+
+      // Enviar el POST
+      const uploadResponse = await axios.post('http://35.184.12.114:8000/ai/predecir_ine_cpu', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+          console.log(`5. Progreso del upload: ${percentCompleted}%`);
+        }
+      });
+
+      console.log('6. Upload exitoso!');
+      console.log('   - Status:', uploadResponse.status);
+      console.log('   - Data:', JSON.stringify(uploadResponse.data, null, 2));
+
+      // Extraer los datos del resultado usando la función auxiliar
+      const resultData = extractResultData(uploadResponse.data);
+
+      if (resultData) {
+        // Crear el objeto de predictionData con los campos esperados
+        const newPredictionData = {
+          id: `ID-${Date.now()}`,
+          nombre: resultData.nombre || '',
+          segundo_nombre: resultData.segundo_nombre || resultData['segundo nombre'] || '',
+          apellido_paterno: resultData.apellido_paterno || resultData['apellido paterno'] || '',
+          apellido_materno: resultData.apellido_materno || resultData['apellido materno'] || '',
+          direccion1: resultData.direccion1 || '',
+          direccion2: resultData.direccion2 || '',
+          direccion3: resultData.direccion3 || '',
+          calle: resultData.calle || '',
+          numero_ext: resultData.numero_ext || resultData['numero ext'] || '',
+          numero_int: resultData.numero_int || resultData['numero int'] || '',
+          colonia: resultData.colonia || '',
+          codigo_postal: resultData.codigo_postal || resultData['codigo postal'] || '',
+          municipio: resultData.municipio || '',
+          estado: resultData.estado || ''
+        };
+
+        console.log('Datos procesados para el estado:', newPredictionData);
+
+        setPredictionData(newPredictionData);
+        setEditedData(newPredictionData);
+      } else {
+        console.error('No se pudieron extraer datos válidos de la respuesta');
+        setUploadError('No se pudieron extraer datos de la respuesta del servidor');
+
+        // Usar datos por defecto en caso de error
+        const defaultData = {
+          id: `ID-${Date.now()}`,
+          nombre: '',
+          segundo_nombre: '',
+          apellido_paterno: '',
+          apellido_materno: '',
+          direccion1: '',
+          direccion2: '',
+          direccion3: '',
+          calle: '',
+          numero_ext: '',
+          numero_int: '',
+          colonia: '',
+          codigo_postal: '',
+          municipio: '',
+          estado: ''
+        };
+        setPredictionData(defaultData);
+        setEditedData(defaultData);
+      }
+
+      setUploading(false);
+
+      // Después de capturar, iremos a la página de resultados
+      setCurrentPage('resultado');
+
+    } catch (error) {
+      console.error('ERROR EN UPLOAD:');
+      console.error('   - Mensaje:', error.message);
+      console.error('   - Response:', error.response?.data);
+      console.error('   - Status:', error.response?.status);
+      console.error('   - Headers:', error.response?.headers);
+      setUploadError(error.message);
+      setUploading(false);
+    }
+  }, [webcamRef, setImgSrc, selectedResolution, selectedDeviceId]);
 
   // Función para regresar a tomar la foto
   const retakePhoto = () => {
     setImgSrc(null);
     setIsSaved(false);
     setCurrentPage('captura');
+    // Limpiar estados de upload
+    setUploading(false);
+    setUploadProgress(0);
+    setUploadError(null);
+
+    // Resetear predictionData
+    setPredictionData({
+      id: '',
+      nombre: '',
+      segundo_nombre: '',
+      apellido_paterno: '',
+      apellido_materno: '',
+      direccion1: '',
+      direccion2: '',
+      direccion3: '',
+      calle: '',
+      numero_ext: '',
+      numero_int: '',
+      colonia: '',
+      codigo_postal: '',
+      municipio: '',
+      estado: ''
+    });
   };
 
   // Funciones para manejar la edición de datos
@@ -285,11 +454,41 @@ function App() {
             {/* Mostrar la información de resolución actualizada */}
             {renderResolutionInfo()}
           </div>
-          
+
+          {/* Indicadores de progreso de upload */}
+          {uploading && (
+            <div className="upload-progress">
+              <p>Subiendo imagen... {uploadProgress}%</p>
+              <div className="progress-bar">
+                <div 
+                  className="progress-bar-fill" 
+                  style={{ width: `${uploadProgress}%` }}
+                ></div>
+              </div>
+            </div>
+          )}
+
+          {uploadError && (
+            <div className="upload-error">
+              <p>Error: {uploadError}</p>
+            </div>
+          )}
+
+
           {/* Controles principales */}
           <div className="camera-controls">
-            <button onClick={capture} className="btn">Tomar foto</button>
-            <button onClick={() => setIsCameraEnabled(false)} className="btn">
+          <button 
+              onClick={capture} 
+              className="btn"
+              disabled={uploading}
+            >
+              {uploading ? 'Subiendo...' : 'Tomar foto'}
+            </button>
+            <button 
+              onClick={() => setIsCameraEnabled(false)} 
+              className="btn"
+              disabled={uploading}
+            >
               Cambiar cámara
             </button>
           </div>
@@ -321,7 +520,8 @@ function App() {
             <div className="json-grid">
               {Object.entries(predictionData).map(([key, value]) => {
                 if (key === 'id') return null;
-                
+                // Asegurarse de que value sea siempre una string
+                const displayValue = typeof value === 'string' ? value : String(value || '');
                 return (
                   <div className="json-field" key={key}>
                     <span className="json-key">{key.replace(/_/g, ' ')}:</span>
@@ -329,12 +529,12 @@ function App() {
                       <input
                         type="text"
                         name={key}
-                        value={editedData[key]}
+                        value={typeof editedData[key] === 'string' ? editedData[key] : String(editedData[key] || '')}
                         onChange={handleInputChange}
                         className="json-input"
                       />
                     ) : (
-                      <span className="json-value">{value}</span>
+                      <span className="json-value">{displayValue}</span>
                     )}
                   </div>
                 );
