@@ -50,6 +50,19 @@ function App() {
     estado: ''
   });
 
+  // Estados para el flujo de revisión campo por campo
+  const [isReviewingFields, setIsReviewingFields] = useState(false);
+  const [currentFieldIndex, setCurrentFieldIndex] = useState(0);
+  const [reviewedFields, setReviewedFields] = useState(new Set());
+  const [isEditingCurrentField, setIsEditingCurrentField] = useState(false);
+  
+  // Lista de campos en el orden que queremos revisar (excluyendo ID)
+  const fieldOrder = [
+    'nombre', 'segundo_nombre', 'apellido_paterno', 'apellido_materno',
+    'calle', 'numero_ext', 'numero_int', 'colonia', 'codigo_postal', 
+    'municipio', 'estado'
+  ];
+
   // Función para capturar imagen con Canvas a resolución completa
   const captureWithCanvas = () => {
     const video = webcamRef.current.video;
@@ -235,7 +248,6 @@ function App() {
           id: `ID-${Date.now()}`,
           nombre: resultData.nombre || '',
           segundo_nombre: resultData.segundo_nombre || resultData['segundo nombre'] || '',
-          apellido_paterno: resultData.apellido_paterno || resultData['apellido paterno'] || '',
           apellido_materno: resultData.apellido_materno || resultData['apellido materno'] || '',
           direccion1: resultData.direccion1 || '',
           direccion2: resultData.direccion2 || '',
@@ -283,6 +295,7 @@ function App() {
 
       // Después de capturar, iremos a la página de resultados
       setCurrentPage('resultado');
+      setIsReviewingFields(true); // Iniciar el flujo de revisión
 
     } catch (error) {
       console.error('ERROR EN UPLOAD:');
@@ -299,6 +312,9 @@ function App() {
   const retakePhoto = () => {
     setImgSrc(null);
     setIsSaved(false);
+    setIsReviewingFields(false);
+    setCurrentFieldIndex(0);
+    setReviewedFields(new Set());
     setCurrentPage('captura');
     // Limpiar estados de upload
     setUploading(false);
@@ -325,10 +341,67 @@ function App() {
     });
   };
 
+  // Funciones para el flujo de revisión campo por campo
+  const handleFieldCheck = () => {
+    if (isEditingCurrentField) {
+      // Si estaba editando, guardar los cambios
+      setPredictionData(prevData => ({
+        ...prevData,
+        [fieldOrder[currentFieldIndex]]: editedData[fieldOrder[currentFieldIndex]]
+      }));
+      setIsEditingCurrentField(false);
+    }
+    
+    // Marcar el campo como revisado
+    const newReviewedFields = new Set(reviewedFields);
+    newReviewedFields.add(fieldOrder[currentFieldIndex]);
+    setReviewedFields(newReviewedFields);
+    
+    // Pasar al siguiente campo
+    if (currentFieldIndex < fieldOrder.length - 1) {
+      setCurrentFieldIndex(currentFieldIndex + 1);
+    } else {
+      // Si llegamos al final, terminar la revisión
+      setIsReviewingFields(false);
+      setIsSaved(true);
+    }
+  };
+
+  const handleFieldEdit = () => {
+    // Copiar todos los datos actuales a editedData, igual que handleEdit
+    setEditedData({...predictionData});
+    setIsEditingCurrentField(true);
+  };
+
+  // Manejar la tecla Enter
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter' && isReviewingFields) {
+        e.preventDefault();
+        handleFieldCheck();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [isReviewingFields, currentFieldIndex, isEditingCurrentField]);
+
+  // Manejar cambios en los campos editables durante la revisión
+  const handleFieldChange = (e) => {
+    const { value } = e.target;
+    const currentField = fieldOrder[currentFieldIndex];
+    setEditedData({
+      ...editedData,
+      [currentField]: value
+    });
+  };
+
   // Funciones para manejar la edición de datos
   const handleEdit = () => {
     setIsEditing(true);
     setEditedData({...predictionData});
+    // Al entrar en edición, resetear el estado de guardado
+    setIsSaved(false);
   };
 
   const handleDoneEditing = () => {
@@ -501,31 +574,42 @@ function App() {
 
   // Renderizar la página de resultados con el nuevo layout
   const renderResultPage = () => (
-    <div className="result-page">
+    <div className={`result-page ${isReviewingFields ? 'reviewing' : ''}`}>
       <h1>Revisa que los datos sean correctos!</h1>
+      
+      {/* Overlay gris si estamos en modo revisión */}
+      {isReviewingFields && <div className="review-overlay"></div>}
       
       <div className="result-container">
         <div className="data-section">
           <h2>Datos Detectados</h2>
+          <h3 className="id-title">{predictionData.id}</h3>
           
           {/* Contenedor de datos en dos columnas */}
           <div className="json-display">
-            {/* ID como elemento especial */}
-            <div className="json-field id-field">
-              <span className="json-key">ID:</span>
-              <span className="json-value">{predictionData.id}</span>
-            </div>
-            
             {/* Contenedor de dos columnas para el resto de campos */}
             <div className="json-grid">
-              {Object.entries(predictionData).map(([key, value]) => {
-                if (key === 'id') return null;
-                // Asegurarse de que value sea siempre una string
-                const displayValue = typeof value === 'string' ? value : String(value || '');
+              {fieldOrder.map((key, index) => {
+                const value = predictionData[key];
+                const isCurrentField = isReviewingFields && currentFieldIndex === index;
+                const isReviewed = reviewedFields.has(key);
+                
                 return (
-                  <div className="json-field" key={key}>
+                  <div 
+                    className={`json-field ${isCurrentField ? 'current-field' : ''} ${isReviewed ? 'reviewed-field' : ''}`} 
+                    key={key}
+                  >
                     <span className="json-key">{key.replace(/_/g, ' ')}:</span>
-                    {isEditing ? (
+                    {isCurrentField && isEditingCurrentField ? (
+                      <input
+                        type="text"
+                        name={key}
+                        value={editedData[key]}
+                        onChange={handleFieldChange}
+                        className="json-input"
+                        autoFocus
+                      />
+                    ) : isEditing && !isReviewingFields ? (
                       <input
                         type="text"
                         name={key}
@@ -534,7 +618,10 @@ function App() {
                         className="json-input"
                       />
                     ) : (
-                      <span className="json-value">{displayValue}</span>
+                      <span className="json-value">
+                        {typeof value === 'string' ? value : String(value || '')}
+                        {isReviewed && <span className="check-indicator">✓</span>}
+                      </span>
                     )}
                   </div>
                 );
@@ -543,31 +630,34 @@ function App() {
           </div>
           
           {/* Botones de acción fuera del contenedor JSON */}
-          <div className="data-actions">
-            {!isEditing && !isSaved && (
-              <button onClick={handleEdit} className="btn btn-edit">
-                Editar
-              </button>
-            )}
-            
-            {isEditing && (
-              <button onClick={handleDoneEditing} className="btn btn-done">
-                Listo!
-              </button>
-            )}
-            
-            {!isEditing && (
-              <button 
-                onClick={handleSave} 
-                className="btn btn-save"
-                disabled={isSaved}>
-                Salvar
-              </button>
-            )}
-          </div>
+          {!isReviewingFields && (
+            <div className="data-actions">
+              {/* El botón Editar SIEMPRE está presente */}
+              {!isEditing && (
+                <button onClick={handleEdit} className="btn btn-edit">
+                  Editar
+                </button>
+              )}
+              
+              {isEditing && (
+                <button onClick={handleDoneEditing} className="btn btn-done">
+                  Listo!
+                </button>
+              )}
+              
+              {!isEditing && (
+                <button 
+                  onClick={handleSave} 
+                  className="btn btn-save"
+                  disabled={isSaved}>
+                  Salvar
+                </button>
+              )}
+            </div>
+          )}
         </div>
         
-        <div className="image-section">
+        <div className="image-section" style={{ position: 'relative', zIndex: isReviewingFields ? 1000 : 1 }}>
           <h2>Imagen Capturada</h2>
           {imgSrc && (
             <img src={imgSrc} alt="Captura de webcam" className="result-img" />
@@ -576,18 +666,43 @@ function App() {
       </div>
       
       {/* Botones de navegación */}
-      <div className="navigation-buttons">
-        <button onClick={retakePhoto} className="btn btn-retake">
-          Repetir Foto
-        </button>
-        
-        <button 
-          onClick={handleContinue} 
-          className="btn btn-continue"
-          disabled={!isSaved}>
-          Continuar
-        </button>
-      </div>
+      {!isReviewingFields && (
+        <div className="navigation-buttons">
+          <button onClick={retakePhoto} className="btn btn-retake">
+            Repetir Foto
+          </button>
+          
+          <button 
+            onClick={handleContinue} 
+            className="btn btn-continue"
+            disabled={!isSaved}>
+            Continuar
+          </button>
+        </div>
+      )}
+      
+      {/* Botones de revisión campo por campo */}
+      {isReviewingFields && (
+        <div className="review-controls">
+          <div className="review-progress">
+            Campo {currentFieldIndex + 1} de {fieldOrder.length}: {fieldOrder[currentFieldIndex].replace(/_/g, ' ')}
+          </div>
+          <div className="review-progress"> 
+            Podrás editar los campos al terminar!
+          </div>
+          <div className="review-buttons">
+            <button onClick={handleFieldEdit} className="btn btn-edit-field" disabled={isEditingCurrentField}>
+              <span>✏️</span> Editar
+            </button>
+            <button onClick={handleFieldCheck} className="btn btn-check-field">
+              <span>✓</span> Check {isEditingCurrentField && '(Guardar)'}
+            </button>
+          </div>
+          <div className="review-instruction">
+            Presiona Enter o haz clic en ✓ para continuar
+          </div>
+        </div>
+      )}
     </div>
   );
 
