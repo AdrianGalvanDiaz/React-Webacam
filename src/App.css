@@ -50,6 +50,16 @@ h2 {
   font-weight: 500;
 }
 
+/* Título del ID */
+.id-title {
+  color: var(--dark-gray);
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  border-bottom: 1px solid var(--medium-gray);
+  padding-bottom: 8px;
+}
+
 /* Botones base */
 .btn {
   background-color: var(--primary-green);
@@ -90,8 +100,6 @@ h2 {
   box-shadow: var(--shadow-medium);
   max-width: none;
 }
-
-/* ... estilos de captura (sin cambios) ... */
 
 /* Página de resultados - OPTIMIZADO SIN SCROLL */
 .result-page {
@@ -164,22 +172,6 @@ h2 {
   min-height: 0;
 }
 
-.id-field {
-  background-color: var(--white);
-  color: var(--dark-gray);
-  border-radius: var(--border-radius);
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 2px solid var(--primary-green);
-}
-
-.id-field .json-key,
-.id-field .json-value {
-  color: var(--dark-gray);
-  font-weight: 600;
-  font-size: 13px;
-}
-
 .json-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -195,6 +187,7 @@ h2 {
   border-radius: var(--border-radius);
   border: 1px solid var(--medium-gray);
   transition: all 0.2s ease;
+  position: relative; /* Añadido para posicionar la palomita */
 }
 
 .json-field:hover {
@@ -213,6 +206,7 @@ h2 {
   color: var(--text-gray);
   font-size: 17px;
   word-break: break-word;
+  padding-right: 28px; /* Añadido para dar espacio a la palomita */
 }
 
 .json-input {
@@ -314,11 +308,15 @@ h2 {
   border-left: 4px solid var(--primary-green) !important;
 }
 
+/* Palomita posicionada en la esquina superior derecha */
 .check-indicator {
+  position: absolute;
+  top: 8px;
+  right: 10px;
   color: var(--primary-green);
-  margin-left: 8px;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 18px;
+  z-index: 1;
 }
 
 /* Panel de control de revisión - COMPACTO */
@@ -568,7 +566,7 @@ h2 {
 .current-field .json-input {
   border: 1px solid var(--primary-green);
   background-color: var(--white);
-  font-size: 13px;
+  font-size: 17px;
 }
 
 /* Efectos de transición */

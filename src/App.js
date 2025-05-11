@@ -308,15 +308,10 @@ function App() {
       <div className="result-container">
         <div className="data-section">
           <h2>Datos Detectados</h2>
+          <h3 className="id-title">{predictionData.id}</h3>
           
           {/* Contenedor de datos en dos columnas */}
           <div className="json-display">
-            {/* ID como elemento especial */}
-            <div className="json-field id-field">
-              <span className="json-key">ID:</span>
-              <span className="json-value">{predictionData.id}</span>
-            </div>
-            
             {/* Contenedor de dos columnas para el resto de campos */}
             <div className="json-grid">
               {fieldOrder.map((key, index) => {
