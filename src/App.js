@@ -3,8 +3,8 @@ import Webcam from 'react-webcam';
 import './App.css';
 
 function App() {
-  // Estado para la navegación , prueba
-  const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado' aylen
+  // Estado para la navegación
+  const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
   
   // Estados de la cámara
   const [devices, setDevices] = useState([]);
@@ -12,13 +12,20 @@ function App() {
   const [isCameraEnabled, setIsCameraEnabled] = useState(false);
   const [imgSrc, setImgSrc] = useState(null);
   const [resolution, setResolution] = useState({ width: 0, height: 0 });
-  const [availableResolutions, setAvailableResolutions] = useState([
-    { width: 640, height: 480, label: "VGA (640x480)" },
-    { width: 1280, height: 720, label: "HD (1280x720)" },
+  
+  // Nuevo estado para el status de resolución
+  const [resolutionStatus, setResolutionStatus] = useState('checking'); // 'good', 'suboptimal', 'checking'
+  
+  // Lista de resoluciones en orden descendente (de mejor a peor)
+  const [availableResolutions] = useState([
     { width: 1920, height: 1080, label: "Full HD (1920x1080)" },
-    { width: 3840, height: 2160, label: "4K (3840x2160)" }
+    { width: 1280, height: 720, label: "HD (1280x720)" },
+    { width: 640, height: 480, label: "VGA (640x480)" }
   ]);
-  const [selectedResolution, setSelectedResolution] = useState(availableResolutions[2]); // Iniciar con Full HD
+  
+  // Iniciar con la resolución Full HD por defecto
+  const [selectedResolution, setSelectedResolution] = useState({ width: 1920, height: 1080, label: "Full HD (1920x1080)" });
+  
   const webcamRef = useRef(null);
   
   // Estados para la página de resultados
@@ -41,6 +48,27 @@ function App() {
     municipio: "QUERETARO",
     estado: "QRO"
   });
+
+  // Función para capturar imagen con Canvas a resolución completa
+  const captureWithCanvas = () => {
+    const video = webcamRef.current.video;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+  
+    // Usar la resolución nativa del video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    console.log(`Capturando imagen: ${canvas.width}x${canvas.height}`);
+  
+    // Dibujar el frame actual del video en el canvas
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+    // Convertir a base64
+    const imageSrc = canvas.toDataURL('image/png');
+    
+    return imageSrc;
+  };
   
   // Copia de los datos para la edición
   const [editedData, setEditedData] = useState({...predictionData});
@@ -60,25 +88,60 @@ function App() {
     navigator.mediaDevices.enumerateDevices().then(handleDevices);
   };
 
+  // Nueva función para intentar diferentes resoluciones
+  const tryNextResolution = useCallback(async (currentResolutionIndex = 0) => {
+    if (currentResolutionIndex >= availableResolutions.length) {
+      console.error('No se pudo establecer ninguna resolución');
+      return;
+    }
+
+    const targetResolution = availableResolutions[currentResolutionIndex];
+    
+    try {
+      // Intentar obtener el stream con la resolución específica
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: selectedDeviceId,
+          width: { ideal: targetResolution.width },
+          height: { ideal: targetResolution.height }
+        }
+      });
+      
+      // Si llegamos aquí, el stream se obtuvo exitosamente
+      setSelectedResolution(targetResolution);
+      
+      // Verificar si es la resolución óptima (1920x1080)
+      if (targetResolution.width === 1920 && targetResolution.height === 1080) {
+        setResolutionStatus('good');
+      } else {
+        setResolutionStatus('suboptimal');
+      }
+      
+      // Detener el stream de prueba (react-webcam manejará el stream real)
+      stream.getTracks().forEach(track => track.stop());
+      
+    } catch (error) {
+      console.log(`No se pudo establecer ${targetResolution.label}, intentando siguiente...`);
+      // Intentar con la siguiente resolución
+      tryNextResolution(currentResolutionIndex + 1);
+    }
+  }, [selectedDeviceId, availableResolutions]);
+
   // Seleccionar un dispositivo y habilitar la cámara
   const enableCamera = (deviceId) => {
     setSelectedDeviceId(deviceId);
     setIsCameraEnabled(true);
-  };
-
-  // Cambiar a la resolución seleccionada
-  const changeResolution = (resolution) => {
-    setSelectedResolution(resolution);
-  };
-
-  // Verificar si la resolución es adecuada (1080p o mayor)
-  const isResolutionGood = () => {
-    return resolution.height >= 1080 || (resolution.width >= 1920 && resolution.height >= 1080);
+    setResolutionStatus('checking');
+    
+    // Iniciar el proceso de búsqueda de resolución óptima
+    setTimeout(() => {
+      tryNextResolution(0);
+    }, 100);
   };
 
   // Capturar imagen
   const capture = useCallback(() => {
-    const imageSrc = webcamRef.current.getScreenshot();
+    const imageSrc = captureWithCanvas();
     setImgSrc(imageSrc);
     // Simular que enviamos la imagen al modelo de IA y obtenemos resultados
     // En una aplicación real, aquí harías una llamada a la API
@@ -124,26 +187,61 @@ function App() {
     });
   };
 
-  // Obtener la resolución de la cámara
+  // Actualizar efecto para detectar cuando la resolución real esté disponible
   useEffect(() => {
     if (isCameraEnabled && webcamRef.current && webcamRef.current.video) {
-      // Crear un observador para detectar cuando el video esté listo
       const checkVideoReady = setInterval(() => {
         const video = webcamRef.current.video;
-        if (video.readyState === 4) { // HAVE_ENOUGH_DATA - El video está listo
+        if (video.readyState === 4) {
+          const actualWidth = video.videoWidth;
+          const actualHeight = video.videoHeight;
+          
           setResolution({
-            width: video.videoWidth,
-            height: video.videoHeight
+            width: actualWidth,
+            height: actualHeight
           });
+          
+          // Verificar si la resolución real coincide con la esperada
+          if (actualWidth === 1920 && actualHeight === 1080) {
+            setResolutionStatus('good');
+          } else {
+            setResolutionStatus('suboptimal');
+          }
+          
           clearInterval(checkVideoReady);
         }
       }, 100);
 
       return () => clearInterval(checkVideoReady);
     }
-  }, [isCameraEnabled, webcamRef, selectedResolution]);
+  }, [isCameraEnabled, webcamRef]);
 
-  // Renderizar la página de captura
+  // Función para renderizar la información de resolución
+  const renderResolutionInfo = () => {
+    if (resolution.width > 0) {
+      return (
+        <div className="resolution-info">
+          {resolution.width} x {resolution.height}
+          
+          {resolutionStatus === 'good' && (
+            <div className="resolution-check">
+              <span className="check-icon">✓</span> ¡Todo bien!
+            </div>
+          )}
+          
+          {resolutionStatus === 'suboptimal' && (
+            <div className="resolution-warning">
+              ⚠️ Resolución no óptima
+            </div>
+          )}
+        </div>
+      );
+    }
+    
+    return null;
+  };
+
+  // Renderizar la página de captura (sin botones de resolución)
   const renderCapturePage = () => (
     <div className="capture-page">
       <h1>Coppel Captura</h1>
@@ -178,25 +276,14 @@ function App() {
               screenshotFormat="image/png"
               videoConstraints={{
                 deviceId: selectedDeviceId,
-                width: selectedResolution.width,
-                height: selectedResolution.height
+                width: { ideal: selectedResolution.width },
+                height: { ideal: selectedResolution.height }
               }}
               className="webcam"
             />
             
-            {/* Mostrar la resolución */}
-            {resolution.width > 0 && (
-              <div className="resolution-info">
-                {resolution.width} x {resolution.height}
-                
-                {/* Indicador de resolución adecuada */}
-                {isResolutionGood() && (
-                  <div className="resolution-check">
-                    <span className="check-icon">✓</span> ¡Todo bien!
-                  </div>
-                )}
-              </div>
-            )}
+            {/* Mostrar la información de resolución actualizada */}
+            {renderResolutionInfo()}
           </div>
           
           {/* Controles principales */}
@@ -207,17 +294,7 @@ function App() {
             </button>
           </div>
           
-          {/* Botones de resolución */}
-          <div className="resolution-buttons">
-            {availableResolutions.map((res, index) => (
-              <button 
-                key={index} 
-                onClick={() => changeResolution(res)} 
-                className={`btn btn-resolution ${selectedResolution.width === res.width && selectedResolution.height === res.height ? 'btn-resolution-active' : ''}`}>
-                {res.label}
-              </button>
-            ))}
-          </div>
+          {/* Ya no renderizamos los botones de resolución */}
         </div>
       )}
     </div>
