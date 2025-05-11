@@ -22,25 +22,25 @@ function App() {
   const [selectedResolution, setSelectedResolution] = useState(availableResolutions[2]); // Iniciar con Full HD
   const webcamRef = useRef(null);
   
-  // Estados para la página de resultados
+  // Estados para la página de resultados - Inicializar vacío
   const [isEditing, setIsEditing] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [predictionData, setPredictionData] = useState({
-    id: `ID-${Date.now()}`,
-    nombre: "ADRIAN",
-    segundo_nombre: "",
-    apellido_paterno: "GALVAN",
-    apellido_materno: "DIAZ",
-    direccion1: "CERRO EL NABO 312",
-    direccion2: "COLPRIVADA JURIQUILLA 76226",
-    direccion3: "QUERETARO, QRO",
-    calle: "CERRO EL NABO",
-    numero_ext: "312",
-    numero_int: "",
-    colonia: "COLPRIVADA JURIQUILLA",
-    codigo_postal: "76226",
-    municipio: "QUERETARO",
-    estado: "QRO"
+    id: '',
+    nombre: '',
+    segundo_nombre: '',
+    apellido_paterno: '',
+    apellido_materno: '',
+    direccion1: '',
+    direccion2: '',
+    direccion3: '',
+    calle: '',
+    numero_ext: '',
+    numero_int: '',
+    colonia: '',
+    codigo_postal: '',
+    municipio: '',
+    estado: ''
   });
   
   // Copia de los datos para la edición
@@ -82,6 +82,46 @@ function App() {
     return resolution.height >= 1080 || (resolution.width >= 1920 && resolution.height >= 1080);
   };
 
+  // Función para extraer el resultado correcto de la respuesta
+  const extractResultData = (serverResponse) => {
+    console.log('=== EXTRAYENDO DATOS DEL SERVIDOR ===');
+    console.log('serverResponse completo:', serverResponse);
+    
+    // Intentar varias rutas posibles para encontrar los datos
+    let resultData = null;
+    
+    // Ruta 1: uploadResponse.data
+    if (serverResponse && typeof serverResponse === 'object') {
+      console.log('Intentando ruta 1: serverResponse directamente');
+      
+      // Verificar si los campos están directamente en serverResponse
+      if (serverResponse.nombre || serverResponse.apellido_paterno) {
+        resultData = serverResponse;
+      }
+      // Verificar si los campos están en serverResponse.resultado
+      else if (serverResponse.resultado && typeof serverResponse.resultado === 'object') {
+        console.log('Intentando ruta 2: serverResponse.resultado');
+        
+        // Si resultado es un objeto simple con los campos
+        if (serverResponse.resultado.nombre || serverResponse.resultado.apellido_paterno) {
+          resultData = serverResponse.resultado;
+        }
+        // Si resultado es un array, tomar el primer elemento
+        else if (Array.isArray(serverResponse.resultado) && serverResponse.resultado.length > 0) {
+          resultData = serverResponse.resultado[0];
+        }
+        // Si resultado tiene otro nivel más (Data.resultado)
+        else if (serverResponse.resultado.Data && serverResponse.resultado.Data.resultado) {
+          console.log('Intentando ruta 3: serverResponse.resultado.Data.resultado');
+          resultData = serverResponse.resultado.Data.resultado;
+        }
+      }
+    }
+    
+    console.log('Datos extraídos:', resultData);
+    return resultData;
+  };
+
   // Capturar imagen con funcionalidad de upload
   const capture = useCallback(async () => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -105,10 +145,10 @@ function App() {
       formData.append('file', blob, 'capture.jpg');
       
       console.log('3. FormData creado con archivo');
-      console.log('4. Enviando POST a: http://34.123.23.160:8000/predecir_ine');
+      console.log('4. Enviando POST a: http://35.184.12.114:8000/ai/predecir_ine_cpu');
       
       // Enviar el POST
-      const uploadResponse = await axios.post('http://34.123.23.160:8000/predecir_ine', formData, {
+      const uploadResponse = await axios.post('http://35.184.12.114:8000/ai/predecir_ine_cpu', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -121,15 +161,65 @@ function App() {
       
       console.log('6. Upload exitoso!');
       console.log('   - Status:', uploadResponse.status);
-      console.log('   - Data:', uploadResponse.data);
+      console.log('   - Data:', JSON.stringify(uploadResponse.data, null, 2));
       
-      // ACTUALIZAR predictionData con la respuesta del servidor
-      setPredictionData({
-        id: `ID-${Date.now()}`,
-        ...uploadResponse.data
-      });
+      // Extraer los datos del resultado usando la función auxiliar
+      const resultData = extractResultData(uploadResponse.data);
+      
+      if (resultData) {
+        // Crear el objeto de predictionData con los campos esperados
+        const newPredictionData = {
+          id: `ID-${Date.now()}`,
+          nombre: resultData.nombre || '',
+          segundo_nombre: resultData.segundo_nombre || resultData['segundo nombre'] || '',
+          apellido_paterno: resultData.apellido_paterno || resultData['apellido paterno'] || '',
+          apellido_materno: resultData.apellido_materno || resultData['apellido materno'] || '',
+          direccion1: resultData.direccion1 || '',
+          direccion2: resultData.direccion2 || '',
+          direccion3: resultData.direccion3 || '',
+          calle: resultData.calle || '',
+          numero_ext: resultData.numero_ext || resultData['numero ext'] || '',
+          numero_int: resultData.numero_int || resultData['numero int'] || '',
+          colonia: resultData.colonia || '',
+          codigo_postal: resultData.codigo_postal || resultData['codigo postal'] || '',
+          municipio: resultData.municipio || '',
+          estado: resultData.estado || ''
+        };
+        
+        console.log('Datos procesados para el estado:', newPredictionData);
+        
+        setPredictionData(newPredictionData);
+        setEditedData(newPredictionData);
+      } else {
+        console.error('No se pudieron extraer datos válidos de la respuesta');
+        setUploadError('No se pudieron extraer datos de la respuesta del servidor');
+        
+        // Usar datos por defecto en caso de error
+        const defaultData = {
+          id: `ID-${Date.now()}`,
+          nombre: '',
+          segundo_nombre: '',
+          apellido_paterno: '',
+          apellido_materno: '',
+          direccion1: '',
+          direccion2: '',
+          direccion3: '',
+          calle: '',
+          numero_ext: '',
+          numero_int: '',
+          colonia: '',
+          codigo_postal: '',
+          municipio: '',
+          estado: ''
+        };
+        setPredictionData(defaultData);
+        setEditedData(defaultData);
+      }
       
       setUploading(false);
+      
+      // Después de capturar, iremos a la página de resultados
+      setCurrentPage('resultado');
       
     } catch (error) {
       console.error('ERROR EN UPLOAD:');
@@ -140,9 +230,6 @@ function App() {
       setUploadError(error.message);
       setUploading(false);
     }
-    
-    // Después de capturar, iremos a la página de resultados
-    setCurrentPage('resultado');
   }, [webcamRef, setImgSrc, selectedResolution, selectedDeviceId]);
 
   // Función para regresar a tomar la foto
@@ -154,6 +241,25 @@ function App() {
     setUploading(false);
     setUploadProgress(0);
     setUploadError(null);
+    
+    // Resetear predictionData
+    setPredictionData({
+      id: '',
+      nombre: '',
+      segundo_nombre: '',
+      apellido_paterno: '',
+      apellido_materno: '',
+      direccion1: '',
+      direccion2: '',
+      direccion3: '',
+      calle: '',
+      numero_ext: '',
+      numero_int: '',
+      colonia: '',
+      codigo_postal: '',
+      municipio: '',
+      estado: ''
+    });
   };
 
   // Funciones para manejar la edición de datos
@@ -339,6 +445,9 @@ function App() {
               {Object.entries(predictionData).map(([key, value]) => {
                 if (key === 'id') return null;
                 
+                // Asegurarse de que value sea siempre una string
+                const displayValue = typeof value === 'string' ? value : String(value || '');
+                
                 return (
                   <div className="json-field" key={key}>
                     <span className="json-key">{key.replace(/_/g, ' ')}:</span>
@@ -346,12 +455,12 @@ function App() {
                       <input
                         type="text"
                         name={key}
-                        value={editedData[key]}
+                        value={typeof editedData[key] === 'string' ? editedData[key] : String(editedData[key] || '')}
                         onChange={handleInputChange}
                         className="json-input"
                       />
                     ) : (
-                      <span className="json-value">{value}</span>
+                      <span className="json-value">{displayValue}</span>
                     )}
                   </div>
                 );
