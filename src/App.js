@@ -60,7 +60,7 @@ function App() {
   const fieldOrder = [
     'nombre', 'segundo_nombre', 'apellido_paterno', 'apellido_materno',
     'calle', 'numero_ext', 'numero_int', 'colonia', 'codigo_postal', 
-    'municipio', 'esttttado'
+    'municipio', 'estado'
   ]; 
 
   // Función para capturar imagen con Canvas a resolución completa
