@@ -446,7 +446,7 @@ try {
     const currentField = fieldOrder[currentFieldIndex];
     setEditedData({
       ...editedData,
-      [currentField]: value
+      [currentField]: value.toUpperCase()
     });
   };
 
@@ -479,7 +479,7 @@ try {
     const { name, value } = e.target;
     setEditedData({
       ...editedData,
-      [name]: value
+      [name]: value.toUpperCase()
     });
   };
 
