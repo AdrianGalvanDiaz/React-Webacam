@@ -670,3 +670,130 @@ h2 {
   width: 100%;
   height: 100%;
 }
+
+/* Estilos para popups */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-content {
+  background-color: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.rfc-input-container {
+  display: flex;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+/* Modificar los estilos para el input de RFC */
+.rfc-input {
+  flex: 1;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.rfc-input-error {
+  border: 2px solid red;
+  background-color: rgba(255, 0, 0, 0.05);
+}
+
+.rfc-input-valid {
+  border: 2px solid green;
+  background-color: rgba(0, 128, 0, 0.05);
+}
+
+.rfc-error {
+  color: red;
+  font-size: 14px;
+  margin-top: -10px;
+  margin-bottom: 15px;
+}
+
+.rfc-success {
+  color: green;
+  margin: 15px 0;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.btn-validate {
+  background-color: #0077cc;
+  color: white;
+}
+
+.btn-validate:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-primary {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-primary:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.final-instructions {
+  margin: 20px 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.id-container {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.id-code {
+  font-size: 24px;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.btn-copy {
+  background-color: #0077cc;
+  color: white;
+}
+
+.btn-close {
+  background-color: #dc3545;
+  color: white;
+  min-width: 120px;
+}

@@ -58,6 +58,12 @@ function App() {
   const [currentFieldIndex, setCurrentFieldIndex] = useState(0);
   const [reviewedFields, setReviewedFields] = useState(new Set());
   const [isEditingCurrentField, setIsEditingCurrentField] = useState(false);
+
+  // Agregar este nuevo estado después de los demás estados
+  const [copyButtonText, setCopyButtonText] = useState('Copiar');
+
+  // Agregar este estado con los demás estados de RFC
+  const [rfcErrorMessage, setRfcErrorMessage] = useState("El RFC debe contener 12 o 13 caracteres alfanuméricos");
   
   // Lista de campos en el orden que queremos revisar (excluyendo ID)
   const fieldOrder = [
@@ -94,6 +100,13 @@ function App() {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadError, setUploadError] = useState(null);
+
+  // Estados para los popups de RFC y finalización
+  const [showRfcPopup, setShowRfcPopup] = useState(false);
+  const [showFinalPopup, setShowFinalPopup] = useState(false);
+  const [rfcText, setRfcText] = useState('');
+  const [rfcError, setRfcError] = useState(false);
+  const [rfcValidated, setRfcValidated] = useState(false);
   
   // Función para obtener los dispositivos disponibles
   const handleDevices = useCallback(
@@ -233,7 +246,7 @@ try {
       
       // Datos dummy
       const dummyData = {
-        id: `ID-${Date.now()}`,
+        id: `${Date.now()}`,
         nombre: "AORIAN",
         segundo_nombre: "",
         apellido_paterno: "GALVAN",
@@ -295,7 +308,7 @@ try {
       if (resultData) {
         // Crear el objeto de predictionData con los campos esperados
         const newPredictionData = {
-          id: `ID-${Date.now()}`,
+          id: `${Date.now()}`,
           nombre: resultData.nombre || '',
           segundo_nombre: resultData.segundo_nombre || resultData['segundo nombre'] || '',
           apellido_paterno: resultData.apellido_paterno || '',
@@ -322,7 +335,7 @@ try {
 
         // Usar datos por defecto en caso de error
         const defaultData = {
-          id: `ID-${Date.now()}`,
+          id: `${Date.now()}`,
           nombre: '',
           segundo_nombre: '',
           apellido_paterno: '',
@@ -470,8 +483,8 @@ try {
   };
 
   const handleContinue = () => {
-    // Aquí iría la lógica para continuar al siguiente paso
-    alert("Continuando al siguiente paso...");
+    // Mostrar el popup de RFC en lugar de mostrar un alert
+    setShowRfcPopup(true);
   };
 
   // Manejar cambios en los campos editables
@@ -482,6 +495,89 @@ try {
       [name]: value.toUpperCase()
     });
   };
+
+  // Modificar la función handleRfcChange:
+  const handleRfcChange = (e) => {
+    // Convertir a mayúsculas
+    const uppercaseValue = e.target.value.toUpperCase();
+    setRfcText(uppercaseValue);
+    // Resetear error si el usuario está escribiendo
+    if (rfcError) setRfcError(false);
+  };
+
+// Reemplazar la función validateRfc con esta:
+const validateRfc = () => {
+  // Verificar longitud (12 o 13 caracteres)
+  if (rfcText.length !== 12 && rfcText.length !== 13) {
+    setRfcError(true);
+    return;
+  }
+  
+  if (USE_LOCAL_TEST_MODE) {
+    // En modo local, validar solo con un RFC específico
+    if (rfcText === "GADA021008F35") {
+      setRfcValidated(true);
+      setRfcError(false);
+    } else {
+      setRfcError(true);
+      // Mostrar mensaje personalizado para RFC no válido
+      setRfcErrorMessage("RFC no válido");
+    }
+  } else {
+    // En modo real, solo validamos la longitud por ahora
+    // Aquí iría la validación con el backend
+    setRfcValidated(true);
+    setRfcError(false);
+  }
+};
+
+// Continuar después de validar RFC
+const continueAfterRfc = () => {
+  setShowRfcPopup(false);
+  
+  if (USE_LOCAL_TEST_MODE) {
+    console.log("Modo local: Mostrando popup final con datos dummy");
+    // Mostrar popup final
+    setShowFinalPopup(true);
+  } else {
+    // Aquí iría la integración con el backend para validar el RFC
+    console.log("En modo real: Aquí se implementará la validación con el backend");
+    // Por ahora, solo mostramos el popup final
+    setShowFinalPopup(true);
+  }
+};
+
+// Cerrar el popup final y regresar a la pantalla inicial
+// Reemplazar la función closeAndReset
+const closeAndReset = () => {
+  setShowFinalPopup(false);
+  // Resetear estados pero sin activar la cámara
+  setCurrentPage('captura');
+  setIsCameraEnabled(false);
+  setImgSrc(null);
+  setIsSaved(false);
+  setIsReviewingFields(false);
+  setCurrentFieldIndex(0);
+  setReviewedFields(new Set());
+  setRfcText('');
+  setRfcValidated(false);
+  setRfcError(false);
+  setCopyButtonText('Copiar');
+};
+
+// Reemplazar la función copyIdToClipboard con esta:
+const copyIdToClipboard = () => {
+  navigator.clipboard.writeText(predictionData.id)
+    .then(() => {
+      console.log('ID copiado al portapapeles');
+      setCopyButtonText('Copiado!'); // Añadido el signo de exclamación
+      // Opcional: volver al texto original después de un tiempo
+      setTimeout(() => setCopyButtonText('Copiar'), 3000);
+    })
+    .catch(err => {
+      console.error('Error al copiar: ', err);
+    });
+};
 
   // Actualizar efecto para detectar cuando la resolución real esté disponible
   useEffect(() => {
@@ -760,10 +856,92 @@ try {
     </div>
   );
 
-  // Renderizar la página correspondiente según el estado
+  // Popup de validación de RFC
+const renderRfcPopup = () => (
+  <div className="popup-overlay" style={{ display: showRfcPopup ? 'flex' : 'none' }}>
+    <div className="popup-content">
+      <h2>Captura y valida el RFC del cliente</h2>
+      
+      <div className="rfc-input-container">
+        <input
+          type="text"
+          value={rfcText}
+          onChange={handleRfcChange}
+          placeholder="Ingresa el RFC"
+          className={`rfc-input ${rfcText.length > 0 && (rfcText.length < 12 || rfcText.length > 13) ? 'rfc-input-error' : ''} ${(rfcText.length === 12 || rfcText.length === 13) ? 'rfc-input-valid' : ''}`}
+          style={{ 
+            color: 'black' // El texto siempre negro
+          }}
+          autoCapitalize="characters"
+          onInput={(e) => e.target.value = e.target.value.toUpperCase()}
+        />
+        <button 
+          onClick={validateRfc} 
+          className="btn btn-validate"
+          disabled={!(rfcText.length === 12 || rfcText.length === 13)}
+        >
+          Validar
+        </button>
+      </div>
+      
+      {rfcError && (
+        <p className="rfc-error">{rfcErrorMessage}</p>
+      )}
+      
+      {rfcValidated && (
+        <div className="rfc-success">
+          <p>Validación exitosa</p>
+        </div>
+      )}
+      
+      <div className="popup-buttons">
+        <button onClick={() => setShowRfcPopup(false)} className="btn btn-secondary">
+          Regresar
+        </button>
+        <button 
+          onClick={continueAfterRfc} 
+          className="btn btn-primary"
+          disabled={!rfcValidated}
+        >
+          Continuar
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Popup de finalización
+const renderFinalPopup = () => (
+  <div className="popup-overlay" style={{ display: showFinalPopup ? 'flex' : 'none' }}>
+    <div className="popup-content">
+      <h2>Has finalizado tu proceso de captura!</h2>
+      
+      <p className="final-instructions">
+        Copia el siguiente código y pégalo en tu Sistema 
+        Legado o NPV para cargar los datos capturados, no cierres 
+        esta ventana hasta no haber cargado los datos.
+      </p>
+      
+      <div className="id-container">
+        <span className="id-code">ID: {predictionData.id}</span>
+        <button onClick={copyIdToClipboard} className="btn btn-copy">{copyButtonText}</button>
+      </div>
+      
+      <div className="popup-buttons">
+        <button onClick={closeAndReset} className="btn btn-close">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// Renderizar la página correspondiente según el estado
   return (
     <div className="App">
       {currentPage === 'captura' ? renderCapturePage() : renderResultPage()}
+      {renderRfcPopup()}
+      {renderFinalPopup()}
     </div>
   );
 }
