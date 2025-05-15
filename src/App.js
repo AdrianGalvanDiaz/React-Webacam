@@ -4,6 +4,9 @@ import axios from 'axios';
 import './App.css';
 
 function App() {
+  const USE_LOCAL_TEST_MODE = true; // Constante global - cambiar a false para usar API real
+  // console.log('Modo de prueba local:', USE_LOCAL_TEST_MODE); // Verificación visual en consola
+
   // Estado para la navegación
   const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
   
@@ -198,16 +201,63 @@ function App() {
     return resultData;
   };
 
-  // Capturar imagen con funcionalidad de upload
-  const capture = useCallback(async () => {
-    const imageSrc = captureWithCanvas();
-    setImgSrc(imageSrc);
-    setUploading(true);
-    setUploadError(null);
-    setUploadProgress(0);
+// Capturar imagen con funcionalidad de upload
+const capture = useCallback(async () => {
+  const imageSrc = captureWithCanvas();
+  setImgSrc(imageSrc);
+  setUploading(true);
+  setUploadError(null);
+  setUploadProgress(0);
 
-    try {
-      console.log('=== INICIO DEL PROCESO DE UPLOAD ===');
+try {
+    console.log('=== INICIO DEL PROCESO ===');
+    // console.log('Modo de prueba local activado:', USE_LOCAL_TEST_MODE); // Log para depuración
+    
+    // Simular progreso de carga
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += 10;
+      setUploadProgress(progress);
+      if (progress >= 100) {
+        clearInterval(progressInterval);
+      }
+    }, 300);
+
+    if (USE_LOCAL_TEST_MODE) {
+      console.log('*** MODO LOCAL EJECUTÁNDOSE ***'); // Log de confirmación
+      // MODO LOCAL: Usar datos dummy
+      // console.log('Usando modo de prueba local con datos dummy');
+      
+      // Simular retraso de red
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Datos dummy
+      const dummyData = {
+        id: `ID-${Date.now()}`,
+        nombre: "AORIAN",
+        segundo_nombre: "",
+        apellido_paterno: "GALVAN",
+        apellido_materno: "DIAZ",
+        direccion1: "CCERRO EL NABO 312",
+        direccion2: "COL PRIVADA JURIQUILLA 76226",
+        direccion3: "QUERETARO, QRO",
+        calle: "CCERRO EL NABO",
+        numero_ext: "312",
+        numero_int: "",
+        colonia: "COL PRIVADA JURIQUILLA",
+        codigo_postal: "76230",
+        municipio: "QUERETARO",
+        estado: "QRO"
+      };
+      
+      setPredictionData(dummyData);
+      setEditedData(dummyData);
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+    } else {
+      console.log('*** MODO API REAL EJECUTÁNDOSE ***'); // Log de confirmación
+      // MODO API REAL: Enviar al backend
+      console.log('*** EJECUTANDO MODO API REAL ***');
       console.log('1. Imagen capturada, tamaño del data URL:', imageSrc.length);
 
       // Convertir el data URL a un Blob
@@ -248,6 +298,7 @@ function App() {
           id: `ID-${Date.now()}`,
           nombre: resultData.nombre || '',
           segundo_nombre: resultData.segundo_nombre || resultData['segundo nombre'] || '',
+          apellido_paterno: resultData.apellido_paterno || '',
           apellido_materno: resultData.apellido_materno || resultData['apellido materno'] || '',
           direccion1: resultData.direccion1 || '',
           direccion2: resultData.direccion2 || '',
@@ -290,23 +341,26 @@ function App() {
         setPredictionData(defaultData);
         setEditedData(defaultData);
       }
+    }
 
-      setUploading(false);
+    setUploading(false);
 
-      // Después de capturar, iremos a la página de resultados
-      setCurrentPage('resultado');
-      setIsReviewingFields(true); // Iniciar el flujo de revisión
+    // Después de capturar, iremos a la página de resultados
+    setCurrentPage('resultado');
+    setIsReviewingFields(true); // Iniciar el flujo de revisión
 
-    } catch (error) {
-      console.error('ERROR EN UPLOAD:');
-      console.error('   - Mensaje:', error.message);
+  } catch (error) {
+    console.error('ERROR EN PROCESO:');
+    console.error('   - Mensaje:', error.message);
+    if (!USE_LOCAL_TEST_MODE) {
       console.error('   - Response:', error.response?.data);
       console.error('   - Status:', error.response?.status);
       console.error('   - Headers:', error.response?.headers);
-      setUploadError(error.message);
-      setUploading(false);
     }
-  }, [webcamRef, setImgSrc, selectedResolution, selectedDeviceId]);
+    setUploadError(error.message);
+    setUploading(false);
+  }
+}, [webcamRef, setImgSrc, selectedResolution, selectedDeviceId]); // Quitar useLocalTestMode de las dependencias
 
   // Función para regresar a tomar la foto
   const retakePhoto = () => {
