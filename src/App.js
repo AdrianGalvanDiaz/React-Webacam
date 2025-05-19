@@ -540,27 +540,30 @@ try {
   // Renderizar la página de captura (sin botones de resolución)
   const renderCapturePage = () => (
     <div className="capture-page">
-      <h1>Coppel Captura</h1>
-      
-      {/* Botón para listar dispositivos */}
-      {!isCameraEnabled && (
-        <div className="devices-container">
-          <button onClick={loadDevices} className="btn">
-            Haz una nueva captura
-          </button>
-          
-          <div className="device-list">
-            {devices.map((device, key) => (
-              <div key={key} className="device-item">
-                <span>{device.label || `Dispositivo ${key + 1}`}</span>
-                <button onClick={() => enableCamera(device.deviceId)} className="btn">
-                  Seleccionar
-                </button>
-              </div>
-            ))}
+      <div>
+        <h1>Sistema de captura de datos Coppel</h1>
+        <p className="capture-page-subtitle">Captura los datos del cliente escaneando su identificación</p>
+        
+        {/* Botón para listar dispositivos */}
+        {!isCameraEnabled && (
+          <div className="devices-container">
+            <button onClick={loadDevices} className="btn">
+              Hacer una nueva captura
+            </button>
+            
+            <div className="device-list">
+              {devices.map((device, key) => (
+                <div key={key} className="device-item">
+                  <span>{device.label || `Dispositivo ${key + 1}`}</span>
+                  <button onClick={() => enableCamera(device.deviceId)} className="btn">
+                    Seleccionar
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Cámara */}
       {isCameraEnabled && (
@@ -619,8 +622,14 @@ try {
               Cambiar cámara
             </button>
           </div>
-          
-          {/* Ya no renderizamos los botones de resolución */}
+        </div>
+      )}
+      
+      {/* Footer con logo */}
+      {!isCameraEnabled && (
+        <div className="footer-logo">
+          <img src="/coppel_logo.png" alt="Coppel Logo" />
+          <p className="footer-text">Coppel 2025</p>
         </div>
       )}
     </div>
