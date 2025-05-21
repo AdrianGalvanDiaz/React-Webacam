@@ -17,6 +17,9 @@ function App() {
   const [imgSrc, setImgSrc] = useState(null);
   const [resolution, setResolution] = useState({ width: 0, height: 0 });
   
+  // Estado para visibilidad de la guia
+  const [showIdGuide, setShowIdGuide] = useState(false);
+
   // Nuevo estado para el status de resolución
   const [resolutionStatus, setResolutionStatus] = useState('checking'); // 'good', 'suboptimal', 'checking'
   
@@ -589,6 +592,7 @@ const startNewCapture = () => {
   retakePhoto(); // Luego llamar a la función existente para reiniciar el proceso
 };
 
+
 // Reemplazar la función copyIdToClipboard con esta:
 const copyIdToClipboard = () => {
   navigator.clipboard.writeText(predictionData.id)
@@ -695,22 +699,39 @@ const copyIdToClipboard = () => {
                 className="captured-image"
               />
             ) : (
-              /* Si no está subiendo, mostrar la webcam */
-              <Webcam
-                audio={false}
-                ref={webcamRef}
-                screenshotFormat="image/png"
-                videoConstraints={{
-                  deviceId: selectedDeviceId,
-                  width: { ideal: selectedResolution.width },
-                  height: { ideal: selectedResolution.height }
-                }}
-                className="webcam"
-              />
+              <div className="webcam-container">
+                {/* Guía de posicionamiento */}
+                <div className={`id-guide-container ${showIdGuide ? 'visible' : 'hidden'}`}>
+                  <div className="id-guide-overlay">
+                    <img 
+                      src="/credencial-votar.png" 
+                      alt="Guía de colocación" 
+                      className="id-guide-image"
+                    />
+                    <div className="id-guide-text">
+                      <p>Coloca tu INE como se muestra</p>
+                      <p>Asegúrate que todo el documento sea visible</p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Si no está subiendo, mostrar la webcam */}
+                <Webcam
+                  audio={false}
+                  ref={webcamRef}
+                  screenshotFormat="image/png"
+                  videoConstraints={{
+                    deviceId: selectedDeviceId,
+                    width: { ideal: selectedResolution.width },
+                    height: { ideal: selectedResolution.height }
+                  }}
+                  className="webcam"
+                />
+                
+                {/* Mostrar la información de resolución si no está subiendo */}
+                {!uploading && renderResolutionInfo()}
+              </div>
             )}
-            
-            {/* Mostrar la información de resolución si no está subiendo */}
-            {!uploading && renderResolutionInfo()}
           </div>
 
           {/* Indicadores de progreso de upload */}
@@ -747,6 +768,13 @@ const copyIdToClipboard = () => {
               disabled={uploading}
             >
               Cambiar cámara
+            </button>
+            <button 
+              onClick={() => setShowIdGuide(!showIdGuide)} 
+              className="btn btn-guide"
+              disabled={uploading}
+            >
+              {showIdGuide ? 'x' : '?'}
             </button>
           </div>
         </div>
