@@ -797,3 +797,33 @@ h2 {
   color: white;
   min-width: 120px;
 }
+
+.btn-back {
+  background-color: #6c757d;
+  color: white;
+  min-width: 120px;
+}
+
+.btn-back:hover {
+  background-color: #5a6268;
+}
+
+.copy-warning {
+  color: #e74c3c;
+  background-color: #fdeaea;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 10px;
+  font-size: 14px;
+  border-left: 4px solid #e74c3c;
+}
+
+.btn-retake-new {
+  background-color: #4CAF50;
+  color: white;
+  min-width: 120px;
+}
+
+.btn-retake-new:hover {
+  background-color: #45a049;
+}

@@ -61,6 +61,7 @@ function App() {
 
   // Agregar este nuevo estado después de los demás estados
   const [copyButtonText, setCopyButtonText] = useState('Copiar');
+  const [idCopied, setIdCopied] = useState(false);
 
   // Agregar este estado con los demás estados de RFC
   const [rfcErrorMessage, setRfcErrorMessage] = useState("El RFC debe contener 12 o 13 caracteres alfanuméricos");
@@ -534,6 +535,7 @@ const validateRfc = () => {
 // Continuar después de validar RFC
 const continueAfterRfc = () => {
   setShowRfcPopup(false);
+  setIdCopied(false); // Añadir esta línea
   
   if (USE_LOCAL_TEST_MODE) {
     console.log("Modo local: Mostrando popup final con datos dummy");
@@ -550,6 +552,15 @@ const continueAfterRfc = () => {
 // Cerrar el popup final y regresar a la pantalla inicial
 // Reemplazar la función closeAndReset
 const closeAndReset = () => {
+  // Verificar si se ha copiado el ID
+  if (!idCopied) {
+    // Mostrar una confirmación si no se ha copiado
+    if (!window.confirm('No has copiado el ID. ¿Estás seguro que deseas continuar sin copiar el ID?')) {
+      return; // Si el usuario cancela, no continuar
+    }
+  }
+  
+  
   setShowFinalPopup(false);
   // Resetear estados pero sin activar la cámara
   setCurrentPage('captura');
@@ -563,6 +574,19 @@ const closeAndReset = () => {
   setRfcValidated(false);
   setRfcError(false);
   setCopyButtonText('Copiar');
+  setIdCopied(false); // Resetear el estado de copiado
+};
+
+// Nueva función para regresar a la pantalla de resultados
+const backToResults = () => {
+  setShowFinalPopup(false);
+  // No reiniciamos todos los estados, solo cerramos el popup
+};
+
+// Nueva función para iniciar una nueva captura desde el popup
+const startNewCapture = () => {
+  setShowFinalPopup(false); // Primero cerrar el popup
+  retakePhoto(); // Luego llamar a la función existente para reiniciar el proceso
 };
 
 // Reemplazar la función copyIdToClipboard con esta:
@@ -570,7 +594,8 @@ const copyIdToClipboard = () => {
   navigator.clipboard.writeText(predictionData.id)
     .then(() => {
       console.log('ID copiado al portapapeles');
-      setCopyButtonText('Copiado!'); // Añadido el signo de exclamación
+      setCopyButtonText('Copiado!');
+      setIdCopied(true); // Actualizar el estado cuando el ID es copiado
       // Opcional: volver al texto original después de un tiempo
       setTimeout(() => setCopyButtonText('Copiar'), 3000);
     })
@@ -927,10 +952,21 @@ const renderFinalPopup = () => (
         <button onClick={copyIdToClipboard} className="btn btn-copy">{copyButtonText}</button>
       </div>
       
+      {!idCopied && (
+        <p className="copy-warning">
+          No has copiado el ID todavía. Por favor, copia el ID antes de continuar.
+        </p>
+      )}
+      
       <div className="popup-buttons">
-        <button onClick={closeAndReset} className="btn btn-close">
-          Cerrar
+        <button onClick={backToResults} className="btn btn-back">
+          Regresar
         </button>
+        {idCopied && (
+          <button onClick={startNewCapture} className="btn btn-retake-new">
+            Nueva Captura
+          </button>
+        )}
       </div>
     </div>
   </div>
