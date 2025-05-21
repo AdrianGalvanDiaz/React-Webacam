@@ -687,20 +687,30 @@ const copyIdToClipboard = () => {
       {isCameraEnabled && (
         <div className="camera-container">
           <div className="webcam-wrapper">
-            <Webcam
-              audio={false}
-              ref={webcamRef}
-              screenshotFormat="image/png"
-              videoConstraints={{
-                deviceId: selectedDeviceId,
-                width: { ideal: selectedResolution.width },
-                height: { ideal: selectedResolution.height }
-              }}
-              className="webcam"
-            />
+            {/* Si está subiendo, mostrar la imagen capturada */}
+            {uploading && imgSrc ? (
+              <img 
+                src={imgSrc} 
+                alt="Imagen capturada" 
+                className="captured-image"
+              />
+            ) : (
+              /* Si no está subiendo, mostrar la webcam */
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/png"
+                videoConstraints={{
+                  deviceId: selectedDeviceId,
+                  width: { ideal: selectedResolution.width },
+                  height: { ideal: selectedResolution.height }
+                }}
+                className="webcam"
+              />
+            )}
             
-            {/* Mostrar la información de resolución actualizada */}
-            {renderResolutionInfo()}
+            {/* Mostrar la información de resolución si no está subiendo */}
+            {!uploading && renderResolutionInfo()}
           </div>
 
           {/* Indicadores de progreso de upload */}
@@ -722,10 +732,9 @@ const copyIdToClipboard = () => {
             </div>
           )}
 
-
           {/* Controles principales */}
           <div className="camera-controls">
-          <button 
+            <button 
               onClick={capture} 
               className="btn"
               disabled={uploading}
@@ -740,8 +749,6 @@ const copyIdToClipboard = () => {
               Cambiar cámara
             </button>
           </div>
-          
-          {/* Ya no renderizamos los botones de resolución */}
         </div>
       )}
     </div>
