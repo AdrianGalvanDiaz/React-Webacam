@@ -22,15 +22,25 @@ const CapturePage = ({
   renderResolutionInfo
 }) => {
   return (
-    <div className="capture-page">
+    <div className={`capture-page ${!isCameraEnabled ? 'initial-screen' : ''}`}>
       <h1>Coppel Captura</h1>
       
       {/* Botón para listar dispositivos */}
       {!isCameraEnabled && (
-        <div className="devices-container">
+        <div className="capture-page-initial">
+          <h1>Sistema de captura de datos Coppel</h1>
+          <p className="subtitle">Captura los datos del cliente escaneando su identificación</p>
+          
           <button onClick={loadDevices} className="btn">
-            Haz una nueva captura
+            Hacer una nueva captura
           </button>
+          
+          <img 
+            src="/coppel_logo.png" 
+            alt="Coppel Logo" 
+            className="coppel-logo"
+          />
+          <p className="coppel-year">Coppel 2025</p>
           
           <div className="device-list">
             {devices.map((device, key) => (

@@ -19,6 +19,7 @@ h1 {
   text-align: center;
   font-size: 1.5rem;
   font-weight: 400;
+  display: none; /* Ocultar el h1 global */
 }
 
 h2 {
