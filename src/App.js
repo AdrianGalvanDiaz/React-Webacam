@@ -274,7 +274,7 @@ try {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Datos dummy
-      const dummyData2 = {
+      const dummyData = {
         id: `${Date.now()}`,
         nombre: "AORIAN",
         segundo_nombre: "",
@@ -293,7 +293,7 @@ try {
       };
 
       // Datos dummy para probar validación de calidad pobre
-      const dummyData = {
+      const dummyData2 = {
         id: `${Date.now()}`,
         nombre: "AORIAN",
         segundo_nombre: "",
