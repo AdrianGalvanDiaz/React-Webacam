@@ -285,7 +285,7 @@
   font-size: 1.1rem;
   font-weight: 400;
   color: var(--text-gray);
-  font-style: italic;
+  font-style: normal;
   margin-bottom: 40px;
 }
 
@@ -307,4 +307,121 @@
   font-size: 18px;
   padding: 16px 32px;
   min-width: 250px;
+}
+
+/* Estilos para la pantalla de selección de dispositivos */
+.capture-page-device-selection {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow-medium);
+  max-width: none;
+}
+
+.capture-page-device-selection h1 {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 15px;
+}
+
+.device-selection-header {
+  margin-bottom: 40px;
+}
+
+.device-selection-header .step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.device-selection-header .step-description {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-gray);
+  font-style: normal;
+  margin-bottom: 15px;
+}
+
+.device-selection-header .help-link {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.device-selection-header .help-link:hover {
+  color: var(--dark-blue);
+}
+
+/* Popup de ayuda mejorado */
+.help-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  border: 1px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  box-shadow: var(--shadow-large);
+  z-index: 1000;
+  max-width: 400px;
+  width: 90%;
+}
+
+.help-popup h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 20px;
+}
+
+.help-popup ol {
+  margin: 0 0 25px 20px;
+  color: var(--text-gray);
+}
+
+.help-popup li {
+  margin-bottom: 12px;
+  line-height: 1.4;
+  font-style: normal;
+}
+
+.help-popup .close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-gray);
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.help-popup .close-btn:hover {
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
+}
+
+/* Mejorar los botones de seleccionar */
+.device-item .btn {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  min-width: 120px;
+}
+
+.device-item .btn:hover {
+  background-color: var(--dark-blue);
 }

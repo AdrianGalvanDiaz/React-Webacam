@@ -25,6 +25,7 @@ function App() {
   
   // Estado para visibilidad de la guia
   const [showIdGuide, setShowIdGuide] = useState(false);
+  const [showHelpPopup, setShowHelpPopup] = useState(false);
 
   // Nuevo estado para el status de resolución
   const [resolutionStatus, setResolutionStatus] = useState('checking'); // 'good', 'suboptimal', 'checking'
@@ -740,8 +741,11 @@ const copyIdToClipboard = () => {
           capture={capture}
           setIsCameraEnabled={setIsCameraEnabled}
           setShowIdGuide={setShowIdGuide}
+          setDevices={setDevices}
+          showHelpPopup={showHelpPopup}
+          setShowHelpPopup={setShowHelpPopup}
           renderResolutionInfo={renderResolutionInfo}
-        />
+        />     
       ) : (
         <ResultPage
           isReviewingFields={isReviewingFields}

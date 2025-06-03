@@ -19,14 +19,17 @@ const CapturePage = ({
   capture,
   setIsCameraEnabled,
   setShowIdGuide,
+  setDevices,
+  showHelpPopup,
+  setShowHelpPopup,
   renderResolutionInfo
 }) => {
   return (
     <div className={`capture-page ${!isCameraEnabled ? 'initial-screen' : ''}`}>
       <h1>Coppel Captura</h1>
       
-      {/* Botón para listar dispositivos */}
-      {!isCameraEnabled && (
+{/* Botón para listar dispositivos */}
+      {!isCameraEnabled && devices.length === 0 && (
         <div className="capture-page-initial">
           <h1>Sistema de captura de datos Coppel</h1>
           <p className="subtitle">Captura los datos del cliente escaneando su identificación</p>
@@ -41,6 +44,23 @@ const CapturePage = ({
             className="coppel-logo"
           />
           <p className="coppel-year">Coppel 2025</p>
+        </div>
+      )}
+
+      {!isCameraEnabled && devices.length > 0 && (
+        <div className="capture-page-device-selection">
+          <div className="device-selection-header">
+            <a href="#" onClick={(e) => { e.preventDefault(); setDevices([]); }} style={{color: 'var(--primary-blue)', textDecoration: 'underline'}}>
+              Regresar
+            </a>
+            <h2 className="step-title">Paso 1: Selección de dispositivo</h2>
+            <p className="step-description">
+              Selecciona la cámara para escanear el documento. El nombre de la cámara debería aparecer como "LGT - WEBCAM X"
+            </p>
+            <span className="help-link" onClick={() => setShowHelpPopup(true)}>
+              No veo la cámara
+            </span>
+          </div>
           
           <div className="device-list">
             {devices.map((device, key) => (
@@ -146,6 +166,33 @@ const CapturePage = ({
             </button>
           </div>
         </div>
+      )}
+      {/* Popup de ayuda */}
+      {showHelpPopup && (
+        <>
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999
+          }} onClick={() => setShowHelpPopup(false)}></div>
+          
+          <div className="help-popup">
+            <button className="close-btn" onClick={() => setShowHelpPopup(false)}>
+              ×
+            </button>
+            <h3>¿No encuentras tu cámara?</h3>
+            <ol>
+              <li>Verifica que tu cámara esté conectada correctamente</li>
+              <li>Asegúrate de que no esté siendo usada por otra aplicación</li>
+              <li>Intenta desconectar y volver a conectar el cable USB</li>
+              <li>Si el problema persiste, contacta al departamento de TI</li>
+            </ol>
+          </div>
+        </>
       )}
     </div>
   );
