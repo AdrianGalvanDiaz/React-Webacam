@@ -77,7 +77,26 @@ const CapturePage = ({
 
       {/* Cámara */}
       {isCameraEnabled && (
-        <div className="camera-container">
+        <div className="capture-page-camera-active">
+          <div className="camera-capture-header">
+            <a href="#" onClick={(e) => { e.preventDefault(); setIsCameraEnabled(false); }} style={{color: 'var(--primary-blue)', textDecoration: 'underline'}}>
+              Regresar
+            </a>
+            <div className="step-title-with-help">
+              <h2 className="step-title">Paso 2: Captura</h2>
+              <button className="help-btn-small" onClick={() => setShowIdGuide(!showIdGuide)}>
+                ?
+              </button>
+            </div>
+            <p className="step-description">
+              Coloca la identificación del cliente en el escáner con los datos y fotografía hacia abajo. Haz click en el botón "Tomar foto"
+            </p>
+            <span className="help-link" onClick={() => setShowHelpPopup(true)}>
+              ¿Cómo se debería ver la identificación?
+            </span>
+          </div>
+          
+          <div className="camera-container">
           <div className="webcam-wrapper">
             {/* Si está subiendo, mostrar la imagen capturada */}
             {uploading && imgSrc ? (
@@ -141,8 +160,15 @@ const CapturePage = ({
             </div>
           )}
 
-          {/* Controles principales */}
-          <div className="camera-controls">
+{/* Controles principales */}
+          <div className="camera-controls-redesigned">
+            <button 
+              onClick={() => setIsCameraEnabled(false)} 
+              className="btn btn-secondary"
+              disabled={uploading}
+            >
+              Cambiar cámara
+            </button>
             <button 
               onClick={capture} 
               className="btn"
@@ -150,20 +176,7 @@ const CapturePage = ({
             >
               {uploading ? 'Subiendo...' : 'Tomar foto'}
             </button>
-            <button 
-              onClick={() => setIsCameraEnabled(false)} 
-              className="btn"
-              disabled={uploading}
-            >
-              Cambiar cámara
-            </button>
-            <button 
-              onClick={() => setShowIdGuide(!showIdGuide)} 
-              className="btn btn-guide"
-              disabled={uploading}
-            >
-              {showIdGuide ? 'x' : '?'}
-            </button>
+          </div>
           </div>
         </div>
       )}
@@ -184,13 +197,13 @@ const CapturePage = ({
             <button className="close-btn" onClick={() => setShowHelpPopup(false)}>
               ×
             </button>
-            <h3>¿No encuentras tu cámara?</h3>
-            <ol>
-              <li>Verifica que tu cámara esté conectada correctamente</li>
-              <li>Asegúrate de que no esté siendo usada por otra aplicación</li>
-              <li>Intenta desconectar y volver a conectar el cable USB</li>
-              <li>Si el problema persiste, contacta al departamento de TI</li>
-            </ol>
+            <h3>¿Cómo se debería ver la identificación?</h3>
+            <ul>
+              <li>Verifica que la identificación haya sido colocada correctamente con los datos y la foto hacia abajo</li>
+              <li>Verifica que se haya seleccionado la cámara correcta</li>
+              <li>Verifica que la INE se vea legible y clara, con todos los caracteres visibles</li>
+              <li>Haz clic en el botón "?" junto al título para ver la guía visual de posicionamiento</li>
+            </ul>
           </div>
         </>
       )}

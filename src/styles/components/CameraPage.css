@@ -357,6 +357,19 @@
   color: var(--dark-blue);
 }
 
+.help-link {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.help-link:hover {
+  color: var(--dark-blue);
+}
+
 /* Popup de ayuda mejorado */
 .help-popup {
   position: fixed;
@@ -424,4 +437,105 @@
 
 .device-item .btn:hover {
   background-color: var(--dark-blue);
+}
+
+/* Estilos para la pantalla de captura con cámara activa */
+.capture-page-camera-active {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow-medium);
+  max-width: none;
+}
+
+.capture-page-camera-active h1 {
+  display: block;
+}
+
+.camera-capture-header {
+  margin-bottom: 30px;
+}
+
+.camera-capture-header .step-title-with-help {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.camera-capture-header .step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin: 0;
+}
+
+.camera-capture-header .help-btn-small {
+  background-color: var(--medium-gray);
+  color: var(--text-gray);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.camera-capture-header .help-btn-small:hover {
+  background-color: var(--text-gray);
+  color: var(--white);
+}
+
+.camera-capture-header .step-description {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-gray);
+  font-style: normal;
+  margin-bottom: 20px;
+}
+
+/* Controles de cámara reorganizados */
+.camera-controls-redesigned {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  gap: 20px;
+}
+
+.camera-controls-redesigned .btn-secondary {
+  background-color: transparent;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
+}
+
+.camera-controls-redesigned .btn-secondary:hover {
+  background-color: var(--primary-blue);
+  color: var(--white);
+}
+
+/* Popup mejorado para identificación */
+.help-popup h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 20px;
+}
+
+.help-popup ul {
+  margin: 0 0 25px 20px;
+  color: var(--text-gray);
+  list-style-type: disc;
+}
+
+.help-popup ul li {
+  margin-bottom: 12px;
+  line-height: 1.4;
+  font-style: normal;
 }
