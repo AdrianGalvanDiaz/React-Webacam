@@ -3,9 +3,15 @@ import Webcam from 'react-webcam';
 import axios from 'axios';
 import './App.css';
 
+// Importar componentes modulares
+import CapturePage from './components/CapturePage/CapturePage';
+import ResultPage from './components/ResultPage/ResultPage';
+import RfcPopup from './components/Popups/RfcPopup';
+import FinalPopup from './components/Popups/FinalPopup';
+import QualityWarning from './components/Popups/QualityWarning';
+
 function App() {
   const USE_LOCAL_TEST_MODE = true; // Constante global - cambiar a false para usar API real
-  // console.log('Modo de prueba local:', USE_LOCAL_TEST_MODE); // Verificación visual en consola
 
   // Estado para la navegación
   const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
@@ -254,7 +260,6 @@ const capture = useCallback(async () => {
 
 try {
     console.log('=== INICIO DEL PROCESO ===');
-    // console.log('Modo de prueba local activado:', USE_LOCAL_TEST_MODE); // Log para depuración
     
     // Simular progreso de carga
     let progress = 0;
@@ -267,9 +272,7 @@ try {
     }, 300);
 
     if (USE_LOCAL_TEST_MODE) {
-      console.log('*** MODO LOCAL EJECUTÁNDOSE ***'); // Log de confirmación
-      // MODO LOCAL: Usar datos dummy
-      // console.log('Usando modo de prueba local con datos dummy');
+      console.log('*** MODO LOCAL EJECUTÁNDOSE ***');
       
       // Simular retraso de red
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -293,26 +296,6 @@ try {
         estado: "QRO",
         curp: "GADA021008HQTLZR05"
       };
-
-      // Datos dummy para probar validación de calidad pobre
-      const dummyData2 = {
-        id: `${Date.now()}`,
-        nombre: "AORIAN",
-        segundo_nombre: "",
-        apellido_paterno: "GALVAN",
-        apellido_materno: "",
-        direccion1: "",
-        direccion2: "",
-        direccion3: "",
-        calle: "",
-        numero_ext: "",
-        numero_int: "",
-        colonia: "",
-        codigo_postal: "76230",
-        municipio: "",
-        estado: "",
-        curp: "GADA021008HQTLZR05"
-      };
       
       setPredictionData(dummyData);
       setEditedData(dummyData);
@@ -327,8 +310,7 @@ try {
       clearInterval(progressInterval);
       setUploadProgress(100);
     } else {
-      console.log('*** MODO API REAL EJECUTÁNDOSE ***'); // Log de confirmación
-      // MODO API REAL: Enviar al backend
+      console.log('*** MODO API REAL EJECUTÁNDOSE ***');
       console.log('*** EJECUTANDO MODO API REAL ***');
       console.log('1. Imagen capturada, tamaño del data URL:', imageSrc.length);
 
@@ -339,7 +321,6 @@ try {
 
       // Crear el FormData
       const formData = new FormData();
-      // CAMBIO IMPORTANTE: 'image' -> 'file' para que coincida con FastAPI
       formData.append('file', blob, 'capture.jpg');
 
       console.log('3. FormData creado con archivo');
@@ -441,7 +422,7 @@ try {
     setUploadError(error.message);
     setUploading(false);
   }
-}, [webcamRef, setImgSrc, selectedResolution, selectedDeviceId]); // Quitar useLocalTestMode de las dependencias
+}, [webcamRef, setImgSrc, selectedResolution, selectedDeviceId]);
 
   // Función para regresar a tomar la foto
   const retakePhoto = () => {
@@ -607,7 +588,7 @@ const validateRfc = () => {
 // Continuar después de validar RFC
 const continueAfterRfc = () => {
   setShowRfcPopup(false);
-  setIdCopied(false); // Añadir esta línea
+  setIdCopied(false);
   
   if (USE_LOCAL_TEST_MODE) {
     console.log("Modo local: Mostrando popup final con datos dummy");
@@ -622,7 +603,6 @@ const continueAfterRfc = () => {
 };
 
 // Cerrar el popup final y regresar a la pantalla inicial
-// Reemplazar la función closeAndReset
 const closeAndReset = () => {
   // Verificar si se ha copiado el ID
   if (!idCopied) {
@@ -631,7 +611,6 @@ const closeAndReset = () => {
       return; // Si el usuario cancela, no continuar
     }
   }
-  
   
   setShowFinalPopup(false);
   // Resetear estados pero sin activar la cámara
@@ -646,7 +625,7 @@ const closeAndReset = () => {
   setRfcValidated(false);
   setRfcError(false);
   setCopyButtonText('Copiar');
-  setIdCopied(false); // Resetear el estado de copiado
+  setIdCopied(false);
 
   // Resetear estados de calidad
   setShowQualityWarning(false);
@@ -670,13 +649,13 @@ const closeQualityWarning = () => {
   setShowQualityWarning(false);
 };
 
-// Reemplazar la función copyIdToClipboard con esta:
+// Función para copiar ID al portapapeles
 const copyIdToClipboard = () => {
   navigator.clipboard.writeText(predictionData.id)
     .then(() => {
       console.log('ID copiado al portapapeles');
       setCopyButtonText('Copiado!');
-      setIdCopied(true); // Actualizar el estado cuando el ID es copiado
+      setIdCopied(true);
       // Opcional: volver al texto original después de un tiempo
       setTimeout(() => setCopyButtonText('Copiar'), 3000);
     })
@@ -739,388 +718,80 @@ const copyIdToClipboard = () => {
     return null;
   };
 
-  // Renderizar la página de captura (sin botones de resolución)
-  const renderCapturePage = () => (
-    <div className="capture-page">
-      <h1>Coppel Captura</h1>
-      
-      {/* Botón para listar dispositivos */}
-      {!isCameraEnabled && (
-        <div className="devices-container">
-          <button onClick={loadDevices} className="btn">
-            Haz una nueva captura
-          </button>
-          
-          <div className="device-list">
-            {devices.map((device, key) => (
-              <div key={key} className="device-item">
-                <span>{device.label || `Dispositivo ${key + 1}`}</span>
-                <button onClick={() => enableCamera(device.deviceId)} className="btn">
-                  Seleccionar
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Cámara */}
-      {isCameraEnabled && (
-        <div className="camera-container">
-          <div className="webcam-wrapper">
-            {/* Si está subiendo, mostrar la imagen capturada */}
-            {uploading && imgSrc ? (
-              <img 
-                src={imgSrc} 
-                alt="Imagen capturada" 
-                className="captured-image"
-              />
-            ) : (
-              <div className="webcam-container">
-                {/* Guía de posicionamiento */}
-                <div className={`id-guide-container ${showIdGuide ? 'visible' : 'hidden'}`}>
-                  <div className="id-guide-overlay">
-                    <img 
-                      src="/credencial-votar.png" 
-                      alt="Guía de colocación" 
-                      className="id-guide-image"
-                    />
-                    <div className="id-guide-text">
-                      <p>Coloca tu INE como se muestra</p>
-                      <p>Asegúrate que todo el documento sea visible</p>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Si no está subiendo, mostrar la webcam */}
-                <Webcam
-                  audio={false}
-                  ref={webcamRef}
-                  screenshotFormat="image/png"
-                  videoConstraints={{
-                    deviceId: selectedDeviceId,
-                    width: { ideal: selectedResolution.width },
-                    height: { ideal: selectedResolution.height }
-                  }}
-                  className="webcam"
-                />
-                
-                {/* Mostrar la información de resolución si no está subiendo */}
-                {!uploading && renderResolutionInfo()}
-              </div>
-            )}
-          </div>
-
-          {/* Indicadores de progreso de upload */}
-          {uploading && (
-            <div className="upload-progress">
-              <p>Subiendo imagen... {uploadProgress}%</p>
-              <div className="progress-bar">
-                <div 
-                  className="progress-bar-fill" 
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-            </div>
-          )}
-
-          {uploadError && (
-            <div className="upload-error">
-              <p>Error: {uploadError}</p>
-            </div>
-          )}
-
-          {/* Controles principales */}
-          <div className="camera-controls">
-            <button 
-              onClick={capture} 
-              className="btn"
-              disabled={uploading}
-            >
-              {uploading ? 'Subiendo...' : 'Tomar foto'}
-            </button>
-            <button 
-              onClick={() => setIsCameraEnabled(false)} 
-              className="btn"
-              disabled={uploading}
-            >
-              Cambiar cámara
-            </button>
-            <button 
-              onClick={() => setShowIdGuide(!showIdGuide)} 
-              className="btn btn-guide"
-              disabled={uploading}
-            >
-              {showIdGuide ? 'x' : '?'}
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
-  // Renderizar la página de resultados con el nuevo layout
-  const renderResultPage = () => (
-    <div className={`result-page ${isReviewingFields ? 'reviewing' : ''}`}>
-      <h1>Revisa que los datos sean correctos!</h1>
-      
-      {/* Overlay gris si estamos en modo revisión */}
-      {isReviewingFields && <div className="review-overlay"></div>}
-      
-      <div className="result-container">
-        <div className="data-section">
-          <h2>Datos Detectados</h2>
-          <h3 className="id-title">{predictionData.id}</h3>
-          
-          {/* Contenedor de datos en dos columnas */}
-          <div className="json-display">
-            {/* Contenedor de dos columnas para el resto de campos */}
-            <div className="json-grid">
-              {fieldOrder.map((key, index) => {
-                const value = predictionData[key];
-                const isCurrentField = isReviewingFields && currentFieldIndex === index;
-                const isReviewed = reviewedFields.has(key);
-                
-                return (
-                  <div 
-                    className={`json-field ${isCurrentField ? 'current-field' : ''} ${isReviewed ? 'reviewed-field' : ''}`} 
-                    key={key}
-                  >
-                    <span className="json-key">{key.replace(/_/g, ' ')}:</span>
-                    {isCurrentField && isEditingCurrentField ? (
-                      <input
-                        type="text"
-                        name={key}
-                        value={editedData[key]}
-                        onChange={handleFieldChange}
-                        className="json-input"
-                        autoFocus
-                      />
-                    ) : isEditing && !isReviewingFields ? (
-                      <input
-                        type="text"
-                        name={key}
-                        value={typeof editedData[key] === 'string' ? editedData[key] : String(editedData[key] || '')}
-                        onChange={handleInputChange}
-                        className="json-input"
-                      />
-                    ) : (
-                      <span className="json-value">
-                        {typeof value === 'string' ? value : String(value || '')}
-                        {isReviewed && <span className="check-indicator">✓</span>}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-          
-          {/* Botones de acción fuera del contenedor JSON */}
-          {!isReviewingFields && (
-            <div className="data-actions">
-              {/* El botón Editar SIEMPRE está presente */}
-              {!isEditing && (
-                <button onClick={handleEdit} className="btn btn-edit">
-                  Editar
-                </button>
-              )}
-              
-              {isEditing && (
-                <button onClick={handleDoneEditing} className="btn btn-done">
-                  Listo!
-                </button>
-              )}
-              
-              {!isEditing && (
-                <button 
-                  onClick={handleSave} 
-                  className="btn btn-save"
-                  disabled={isSaved}>
-                  Salvar
-                </button>
-              )}
-            </div>
-          )}
-        </div>
-        
-        <div className="image-section" style={{ position: 'relative', zIndex: isReviewingFields ? 1000 : 1 }}>
-          <h2>Imagen Capturada</h2>
-          {imgSrc && (
-            <img src={imgSrc} alt="Captura de webcam" className="result-img" />
-          )}
-        </div>
-      </div>
-      
-      {/* Botones de navegación */}
-      {!isReviewingFields && (
-        <div className="navigation-buttons">
-          <button onClick={retakePhoto} className="btn btn-retake">
-            Repetir Foto
-          </button>
-          
-          <button 
-            onClick={handleContinue} 
-            className="btn btn-continue"
-            disabled={!isSaved}>
-            Continuar
-          </button>
-        </div>
-      )}
-      
-      {/* Botones de revisión campo por campo */}
-      {isReviewingFields && (
-        <div className="review-controls">
-          <div className="review-progress">
-            Campo {currentFieldIndex + 1} de {fieldOrder.length}: {fieldOrder[currentFieldIndex].replace(/_/g, ' ')}
-          </div>
-          <div className="review-progress"> 
-            Podrás editar los campos al terminar!
-          </div>
-          <div className="review-buttons">
-            <button onClick={handleFieldEdit} className="btn btn-edit-field" disabled={isEditingCurrentField}>
-              <span>✏️</span> Editar
-            </button>
-            <button onClick={handleFieldCheck} className="btn btn-check-field">
-              <span>✓</span> Check {isEditingCurrentField && '(Guardar)'}
-            </button>
-          </div>
-          <div className="review-instruction">
-            Presiona Enter o haz clic en ✓ para continuar
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
-  // Popup de validación de RFC
-const renderRfcPopup = () => (
-  <div className="popup-overlay" style={{ display: showRfcPopup ? 'flex' : 'none' }}>
-    <div className="popup-content">
-      <h2>Captura y valida el RFC del cliente</h2>
-      
-      <div className="rfc-input-container">
-        <input
-          type="text"
-          value={rfcText}
-          onChange={handleRfcChange}
-          placeholder="Ingresa el RFC"
-          className={`rfc-input ${rfcText.length > 0 && (rfcText.length < 12 || rfcText.length > 13) ? 'rfc-input-error' : ''} ${(rfcText.length === 12 || rfcText.length === 13) ? 'rfc-input-valid' : ''}`}
-          style={{ 
-            color: 'black' // El texto siempre negro
-          }}
-          autoCapitalize="characters"
-          onInput={(e) => e.target.value = e.target.value.toUpperCase()}
-        />
-        <button 
-          onClick={validateRfc} 
-          className="btn btn-validate"
-          disabled={!(rfcText.length === 12 || rfcText.length === 13)}
-        >
-          Validar
-        </button>
-      </div>
-      
-      {rfcError && (
-        <p className="rfc-error">{rfcErrorMessage}</p>
-      )}
-      
-      {rfcValidated && (
-        <div className="rfc-success">
-          <p>Validación exitosa</p>
-        </div>
-      )}
-      
-      <div className="popup-buttons">
-        <button onClick={() => setShowRfcPopup(false)} className="btn btn-secondary">
-          Regresar
-        </button>
-        <button 
-          onClick={continueAfterRfc} 
-          className="btn btn-primary"
-          disabled={!rfcValidated}
-        >
-          Continuar
-        </button>
-      </div>
-    </div>
-  </div>
-);
-
-// Popup de finalización
-const renderFinalPopup = () => (
-  <div className="popup-overlay" style={{ display: showFinalPopup ? 'flex' : 'none' }}>
-    <div className="popup-content">
-      <h2>Has finalizado tu proceso de captura!</h2>
-      
-      <p className="final-instructions">
-        Copia el siguiente código y pégalo en tu Sistema 
-        Legado o NPV para cargar los datos capturados, no cierres 
-        esta ventana hasta no haber cargado los datos.
-      </p>
-      
-      <div className="id-container">
-        <span className="id-code">ID: {predictionData.id}</span>
-        <button onClick={copyIdToClipboard} className="btn btn-copy">{copyButtonText}</button>
-      </div>
-      
-      {!idCopied && (
-        <p className="copy-warning">
-          No has copiado el ID todavía. Por favor, copia el ID antes de continuar.
-        </p>
-      )}
-      
-      <div className="popup-buttons">
-        <button onClick={backToResults} className="btn btn-back">
-          Regresar
-        </button>
-        {idCopied && (
-          <button onClick={startNewCapture} className="btn btn-retake-new">
-            Nueva Captura
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-);
-
-// Popup de advertencia de calidad de detección
-const renderQualityWarningPopup = () => (
-  <div className="popup-overlay" style={{ display: showQualityWarning ? 'flex' : 'none' }}>
-    <div className="popup-content">
-      <h2>⚠️ Detección incompleta</h2>
-      
-      <p className="quality-warning-text">
-        No se pudieron detectar suficientes datos de tu identificación.
-      </p>
-      
-      <div className="quality-tips">
-        <p><strong>Verifica que:</strong></p>
-        <ul>
-          <li>Estés usando tu <strong>INE</strong> (no otra identificación)</li>
-          <li>El documento esté en la <strong>orientación correcta</strong></li>
-          <li>Toda la identificación sea <strong>visible en la cámara</strong></li>
-          <li>La imagen tenga <strong>buena iluminación</strong></li>
-          <li>No haya <strong>reflejos o sombras</strong></li>
-        </ul>
-      </div>
-      
-      <div className="popup-buttons">
-        <button onClick={closeQualityWarning} className="btn btn-primary">
-          Entendido
-        </button>
-      </div>
-    </div>
-  </div>
-);
-
-// Renderizar la página correspondiente según el estado
+  // Renderizar la página correspondiente según el estado
   return (
     <div className="App">
-      {currentPage === 'captura' ? renderCapturePage() : renderResultPage()}
-      {renderRfcPopup()}
-      {renderFinalPopup()}
-      {renderQualityWarningPopup()}
+      {currentPage === 'captura' ? (
+        <CapturePage
+          devices={devices}
+          isCameraEnabled={isCameraEnabled}
+          selectedDeviceId={selectedDeviceId}
+          uploading={uploading}
+          imgSrc={imgSrc}
+          uploadProgress={uploadProgress}
+          uploadError={uploadError}
+          showIdGuide={showIdGuide}
+          selectedResolution={selectedResolution}
+          resolution={resolution}
+          resolutionStatus={resolutionStatus}
+          webcamRef={webcamRef}
+          loadDevices={loadDevices}
+          enableCamera={enableCamera}
+          capture={capture}
+          setIsCameraEnabled={setIsCameraEnabled}
+          setShowIdGuide={setShowIdGuide}
+          renderResolutionInfo={renderResolutionInfo}
+        />
+      ) : (
+        <ResultPage
+          isReviewingFields={isReviewingFields}
+          predictionData={predictionData}
+          fieldOrder={fieldOrder}
+          currentFieldIndex={currentFieldIndex}
+          reviewedFields={reviewedFields}
+          isEditingCurrentField={isEditingCurrentField}
+          editedData={editedData}
+          isEditing={isEditing}
+          isSaved={isSaved}
+          imgSrc={imgSrc}
+          handleFieldChange={handleFieldChange}
+          handleInputChange={handleInputChange}
+          handleEdit={handleEdit}
+          handleDoneEditing={handleDoneEditing}
+          handleSave={handleSave}
+          retakePhoto={retakePhoto}
+          handleContinue={handleContinue}
+          handleFieldEdit={handleFieldEdit}
+          handleFieldCheck={handleFieldCheck}
+        />
+      )}
+      
+      <RfcPopup
+        showRfcPopup={showRfcPopup}
+        rfcText={rfcText}
+        rfcError={rfcError}
+        rfcValidated={rfcValidated}
+        rfcErrorMessage={rfcErrorMessage}
+        handleRfcChange={handleRfcChange}
+        validateRfc={validateRfc}
+        setShowRfcPopup={setShowRfcPopup}
+        continueAfterRfc={continueAfterRfc}
+      />
+      
+      <FinalPopup
+        showFinalPopup={showFinalPopup}
+        predictionData={predictionData}
+        copyButtonText={copyButtonText}
+        idCopied={idCopied}
+        copyIdToClipboard={copyIdToClipboard}
+        backToResults={backToResults}
+        startNewCapture={startNewCapture}
+      />
+      
+      <QualityWarning
+        showQualityWarning={showQualityWarning}
+        closeQualityWarning={closeQualityWarning}
+      />
     </div>
   );
 }

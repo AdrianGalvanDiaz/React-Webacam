@@ -1,0 +1,122 @@
+/* Estilos para el flujo de revisión */
+.review-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.current-field {
+  position: relative;
+  z-index: 101 !important;
+  background-color: var(--white) !important;
+  border: 2px solid var(--primary-green) !important;
+  box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+  transform: scale(1.02);
+}
+
+.current-field .json-input {
+  border: 1px solid var(--primary-green);
+  background-color: var(--white);
+  font-size: 17px;
+}
+
+/* Panel de control de revisión - COMPACTO */
+.review-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--dark-gray);
+  color: var(--white);
+  border-top: 4px solid var(--primary-green);
+  padding: 15px;
+  z-index: 102;
+  text-align: center;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.review-progress {
+  font-size: 16px;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: var(--white);
+}
+
+.review-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 10px 0 5px;
+}
+
+.btn-edit-field,
+.btn-check-field {
+  padding: 8px 30px;
+  font-size: 14px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-edit-field {
+  background-color: #FFC107;
+  color: var(--dark-gray);
+}
+
+.btn-edit-field:hover:not(:disabled) {
+  background-color: #FFB300;
+}
+
+.btn-edit-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-check-field {
+  background-color: var(--primary-green);
+  color: var(--white);
+}
+
+.btn-check-field:hover {
+  background-color: var(--hover-green);
+}
+
+.review-instruction {
+  font-size: 12px;
+  color: #E0E0E0;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Asegurar interactividad correcta durante la revisión */
+.review-controls,
+.current-field,
+.image-section {
+  pointer-events: all;
+  z-index: 101;
+}
+
+.image-section {
+  position: relative !important;
+  z-index: 101 !important;
+}
+
+/* Durante la revisión, bloquear interacción con otros elementos */
+.review-overlay ~ .result-page > * {
+  pointer-events: none;
+}
+
+.review-overlay ~ .result-page .current-field,
+.review-overlay ~ .result-page .image-section,
+.review-overlay ~ .result-page .review-controls {
+  pointer-events: all;
+}
