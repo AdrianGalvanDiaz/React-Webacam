@@ -53,7 +53,8 @@ function App() {
     colonia: '',
     codigo_postal: '',
     municipio: '',
-    estado: ''
+    estado: '',
+    curp: ''
   });
 
   // Estados para el flujo de revisión campo por campo
@@ -77,7 +78,7 @@ const [detectionQualityPoor, setDetectionQualityPoor] = useState(false);
   const fieldOrder = [
     'nombre', 'segundo_nombre', 'apellido_paterno', 'apellido_materno',
     'calle', 'numero_ext', 'numero_int', 'colonia', 'codigo_postal', 
-    'municipio', 'estado'
+    'municipio', 'estado', 'curp'
   ];
 
   // Función para capturar imagen con Canvas a resolución completa
@@ -228,7 +229,7 @@ const validateDetectionQuality = (data) => {
   const fieldsToCheck = [
     'nombre', 'segundo_nombre', 'apellido_paterno', 'apellido_materno',
     'direccion1', 'direccion2', 'direccion3', 'calle', 'numero_ext', 
-    'numero_int', 'colonia', 'codigo_postal', 'municipio', 'estado'
+    'numero_int', 'colonia', 'codigo_postal', 'municipio', 'estado', 'curp'
   ];
   
   // Contar campos que tienen contenido
@@ -289,7 +290,8 @@ try {
         colonia: "COL PRIVADA JURIQUILLA",
         codigo_postal: "76230",
         municipio: "QUERETARO",
-        estado: "QRO"
+        estado: "QRO",
+        curp: "GADA021008HQTLZR05"
       };
 
       // Datos dummy para probar validación de calidad pobre
@@ -308,7 +310,8 @@ try {
         colonia: "",
         codigo_postal: "76230",
         municipio: "",
-        estado: ""
+        estado: "",
+        curp: "GADA021008HQTLZR05"
       };
       
       setPredictionData(dummyData);
@@ -378,7 +381,8 @@ try {
           colonia: resultData.colonia || '',
           codigo_postal: resultData.codigo_postal || resultData['codigo postal'] || '',
           municipio: resultData.municipio || '',
-          estado: resultData.estado || ''
+          estado: resultData.estado || '',
+          curp: resultData.curp || ''
         };
 
         console.log('Datos procesados para el estado:', newPredictionData);
@@ -412,7 +416,8 @@ try {
           colonia: '',
           codigo_postal: '',
           municipio: '',
-          estado: ''
+          estado: '',
+          curp: ''
         };
         setPredictionData(defaultData);
         setEditedData(defaultData);
@@ -471,7 +476,8 @@ try {
       colonia: '',
       codigo_postal: '',
       municipio: '',
-      estado: ''
+      estado: '',
+      curp: ''
     });
   };
 
