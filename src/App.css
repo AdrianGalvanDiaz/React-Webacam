@@ -911,3 +911,45 @@ h2 {
 .btn-retake-new:hover {
   background-color: #45a049;
 }
+
+
+.btn-back {
+  background-color: #6c757d;
+  color: white;
+  min-width: 120px;
+}
+
+.btn-back:hover {
+  background-color: #5a6268;
+}
+
+.quality-warning-text {
+  margin: 15px 0;
+  font-size: 16px;
+  color: #666;
+}
+
+.quality-tips {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 6px;
+  margin: 15px 0;
+  text-align: left;
+}
+
+.quality-tips p {
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+.quality-tips ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.quality-tips li {
+  margin-bottom: 8px;
+  color: #555;
+  line-height: 1.4;
+}

@@ -53,7 +53,8 @@ function App() {
     colonia: '',
     codigo_postal: '',
     municipio: '',
-    estado: ''
+    estado: '',
+    curp: ''
   });
 
   // Estados para el flujo de revisión campo por campo
@@ -69,11 +70,15 @@ function App() {
   // Agregar este estado con los demás estados de RFC
   const [rfcErrorMessage, setRfcErrorMessage] = useState("El RFC debe contener 12 o 13 caracteres alfanuméricos");
   
+  // Agregar estos estados para la validación de calidad
+const [showQualityWarning, setShowQualityWarning] = useState(false);
+const [detectionQualityPoor, setDetectionQualityPoor] = useState(false);
+
   // Lista de campos en el orden que queremos revisar (excluyendo ID)
   const fieldOrder = [
     'nombre', 'segundo_nombre', 'apellido_paterno', 'apellido_materno',
     'calle', 'numero_ext', 'numero_int', 'colonia', 'codigo_postal', 
-    'municipio', 'estado'
+    'municipio', 'estado', 'curp'
   ];
 
   // Función para capturar imagen con Canvas a resolución completa
@@ -218,6 +223,27 @@ function App() {
     return resultData;
   };
 
+// Función para validar la calidad de la detección
+const validateDetectionQuality = (data) => {
+  // Lista de campos a validar (excluyendo ID)
+  const fieldsToCheck = [
+    'nombre', 'segundo_nombre', 'apellido_paterno', 'apellido_materno',
+    'direccion1', 'direccion2', 'direccion3', 'calle', 'numero_ext', 
+    'numero_int', 'colonia', 'codigo_postal', 'municipio', 'estado', 'curp'
+  ];
+  
+  // Contar campos que tienen contenido
+  const fieldsWithContent = fieldsToCheck.filter(field => {
+    const value = data[field];
+    return value && typeof value === 'string' && value.trim().length > 0;
+  }).length;
+  
+  console.log(`Campos con contenido: ${fieldsWithContent} de ${fieldsToCheck.length}`);
+  
+  // Si hay 5 o menos campos con contenido, la calidad es pobre
+  return fieldsWithContent <= 5;
+};
+  
 // Capturar imagen con funcionalidad de upload
 const capture = useCallback(async () => {
   const imageSrc = captureWithCanvas();
@@ -264,11 +290,40 @@ try {
         colonia: "COL PRIVADA JURIQUILLA",
         codigo_postal: "76230",
         municipio: "QUERETARO",
-        estado: "QRO"
+        estado: "QRO",
+        curp: "GADA021008HQTLZR05"
+      };
+
+      // Datos dummy para probar validación de calidad pobre
+      const dummyData2 = {
+        id: `${Date.now()}`,
+        nombre: "AORIAN",
+        segundo_nombre: "",
+        apellido_paterno: "GALVAN",
+        apellido_materno: "",
+        direccion1: "",
+        direccion2: "",
+        direccion3: "",
+        calle: "",
+        numero_ext: "",
+        numero_int: "",
+        colonia: "",
+        codigo_postal: "76230",
+        municipio: "",
+        estado: "",
+        curp: "GADA021008HQTLZR05"
       };
       
       setPredictionData(dummyData);
       setEditedData(dummyData);
+
+      // Validar calidad de detección
+      const poorQuality = validateDetectionQuality(dummyData);
+      setDetectionQualityPoor(poorQuality);
+      if (poorQuality) {
+        setShowQualityWarning(true);
+      }
+
       clearInterval(progressInterval);
       setUploadProgress(100);
     } else {
@@ -326,13 +381,21 @@ try {
           colonia: resultData.colonia || '',
           codigo_postal: resultData.codigo_postal || resultData['codigo postal'] || '',
           municipio: resultData.municipio || '',
-          estado: resultData.estado || ''
+          estado: resultData.estado || '',
+          curp: resultData.curp || ''
         };
 
         console.log('Datos procesados para el estado:', newPredictionData);
 
         setPredictionData(newPredictionData);
         setEditedData(newPredictionData);
+
+        // Validar calidad de detección
+        const poorQuality = validateDetectionQuality(newPredictionData);
+        setDetectionQualityPoor(poorQuality);
+        if (poorQuality) {
+          setShowQualityWarning(true);
+        }
       } else {
         console.error('No se pudieron extraer datos válidos de la respuesta');
         setUploadError('No se pudieron extraer datos de la respuesta del servidor');
@@ -353,7 +416,8 @@ try {
           colonia: '',
           codigo_postal: '',
           municipio: '',
-          estado: ''
+          estado: '',
+          curp: ''
         };
         setPredictionData(defaultData);
         setEditedData(defaultData);
@@ -392,6 +456,10 @@ try {
     setUploadProgress(0);
     setUploadError(null);
 
+    // Resetear estados de calidad
+    setShowQualityWarning(false);
+    setDetectionQualityPoor(false);
+
     // Resetear predictionData
     setPredictionData({
       id: '',
@@ -408,7 +476,8 @@ try {
       colonia: '',
       codigo_postal: '',
       municipio: '',
-      estado: ''
+      estado: '',
+      curp: ''
     });
   };
 
@@ -578,6 +647,10 @@ const closeAndReset = () => {
   setRfcError(false);
   setCopyButtonText('Copiar');
   setIdCopied(false); // Resetear el estado de copiado
+
+  // Resetear estados de calidad
+  setShowQualityWarning(false);
+  setDetectionQualityPoor(false);  
 };
 
 // Nueva función para regresar a la pantalla de resultados
@@ -592,6 +665,10 @@ const startNewCapture = () => {
   retakePhoto(); // Luego llamar a la función existente para reiniciar el proceso
 };
 
+// Función para cerrar el popup de advertencia de calidad
+const closeQualityWarning = () => {
+  setShowQualityWarning(false);
+};
 
 // Reemplazar la función copyIdToClipboard con esta:
 const copyIdToClipboard = () => {
@@ -1007,12 +1084,43 @@ const renderFinalPopup = () => (
   </div>
 );
 
+// Popup de advertencia de calidad de detección
+const renderQualityWarningPopup = () => (
+  <div className="popup-overlay" style={{ display: showQualityWarning ? 'flex' : 'none' }}>
+    <div className="popup-content">
+      <h2>⚠️ Detección incompleta</h2>
+      
+      <p className="quality-warning-text">
+        No se pudieron detectar suficientes datos de tu identificación.
+      </p>
+      
+      <div className="quality-tips">
+        <p><strong>Verifica que:</strong></p>
+        <ul>
+          <li>Estés usando tu <strong>INE</strong> (no otra identificación)</li>
+          <li>El documento esté en la <strong>orientación correcta</strong></li>
+          <li>Toda la identificación sea <strong>visible en la cámara</strong></li>
+          <li>La imagen tenga <strong>buena iluminación</strong></li>
+          <li>No haya <strong>reflejos o sombras</strong></li>
+        </ul>
+      </div>
+      
+      <div className="popup-buttons">
+        <button onClick={closeQualityWarning} className="btn btn-primary">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
 // Renderizar la página correspondiente según el estado
   return (
     <div className="App">
       {currentPage === 'captura' ? renderCapturePage() : renderResultPage()}
       {renderRfcPopup()}
       {renderFinalPopup()}
+      {renderQualityWarningPopup()}
     </div>
   );
 }
