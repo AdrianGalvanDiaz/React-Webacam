@@ -29,7 +29,8 @@ function App() {
 
   // Nuevo estado para el status de resolución
   const [resolutionStatus, setResolutionStatus] = useState('checking'); // 'good', 'suboptimal', 'checking'
-  
+  const [isCameraReady, setIsCameraReady] = useState(false);
+
   // Lista de resoluciones en orden descendente (de mejor a peor)
   const [availableResolutions] = useState([
     { width: 1920, height: 1080, label: "Full HD (1920x1080)" },
@@ -183,12 +184,18 @@ const [detectionQualityPoor, setDetectionQualityPoor] = useState(false);
   const enableCamera = (deviceId) => {
     setSelectedDeviceId(deviceId);
     setIsCameraEnabled(true);
+    setIsCameraReady(false);
     setResolutionStatus('checking');
     
     // Iniciar el proceso de búsqueda de resolución óptima
     setTimeout(() => {
       tryNextResolution(0);
     }, 100);
+    
+    // Esperar 2 segundos antes de habilitar el botón
+    setTimeout(() => {
+      setIsCameraReady(true);
+    }, 2000);
   };
 
   // Función para extraer el resultado correcto de la respuesta
@@ -727,7 +734,8 @@ const handleFieldCheck = () => {
           } else {
             setResolutionStatus('suboptimal');
           }
-          
+
+          setIsCameraReady(true); // Habilitar el botón cuando el video esté listo
           clearInterval(checkVideoReady);
         }
       }, 100);
@@ -786,6 +794,7 @@ const handleFieldCheck = () => {
           setDevices={setDevices}
           showHelpPopup={showHelpPopup}
           setShowHelpPopup={setShowHelpPopup}
+          isCameraReady={isCameraReady}
           renderResolutionInfo={renderResolutionInfo}
         />     
       ) : (

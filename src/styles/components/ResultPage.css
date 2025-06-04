@@ -73,9 +73,7 @@
   flex: 1;
   min-width: 0;
   background: var(--white);
-  border-radius: var(--border-radius);
   padding: 20px;
-  box-shadow: var(--shadow-medium);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -89,12 +87,9 @@
   flex-direction: column;
   align-items: center;
   background: var(--white);
-  border-radius: var(--border-radius);
   padding: 20px;
-  box-shadow: var(--shadow-medium);
   overflow: hidden;
   position: relative;
-  max-height: fit-content;
 }
 
 .image-section .result-img {

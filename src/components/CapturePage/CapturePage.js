@@ -22,6 +22,7 @@ const CapturePage = ({
   setDevices,
   showHelpPopup,
   setShowHelpPopup,
+  isCameraReady,
   renderResolutionInfo
 }) => {
   return (
@@ -167,9 +168,9 @@ const CapturePage = ({
             <button 
               onClick={capture} 
               className="btn"
-              disabled={uploading}
+              disabled={uploading || !isCameraReady}
             >
-              {uploading ? 'Subiendo...' : 'Tomar foto'}
+              {uploading ? 'Subiendo...' : !isCameraReady ? 'Inicializando cámara...' : 'Tomar foto'}
             </button>
           </div>
           </div>
