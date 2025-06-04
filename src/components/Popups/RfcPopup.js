@@ -53,7 +53,7 @@ const RfcPopup = ({
           <button 
             onClick={validateRfc} 
             className="btn btn-validate"
-            disabled={!(rfcText.length === 12 || rfcText.length === 13)}
+            disabled={!(rfcText.length === 12 || rfcText.length === 13) || rfcValidated}
           >
             Validar
           </button>
