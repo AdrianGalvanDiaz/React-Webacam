@@ -3,10 +3,9 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding-bottom: 20px;
-  height: 100vh;
-  min-height: 0;
-  overflow: hidden;
+  padding-bottom: 80px;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 /* Mejorar espaciado del header */
@@ -14,8 +13,8 @@
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--dark-gray);
-  margin-bottom: 15px;
-  margin-top: 25px;
+  margin-bottom: 10px;
+  margin-top: 15px;
 }
 
 .result-page .back-link {
@@ -34,14 +33,14 @@
   font-size: 1rem;
   font-weight: 400;
   color: var(--text-gray);
-  margin-bottom: 15px;
+  margin-bottom: 8px;
   line-height: 1.4;
 }
 
 .result-page .edit-note {
   font-size: 0.9rem;
   color: var(--text-gray);
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 /* Cuando está en modo revisión, agregar espacio para el panel */
@@ -69,6 +68,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .image-section {
@@ -82,6 +82,7 @@
   padding: 20px;
   box-shadow: var(--shadow-medium);
   overflow: hidden;
+  position: relative;
 }
 
 .result-img {
@@ -112,7 +113,7 @@
 
 .json-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 10px;
 }
 
@@ -168,26 +169,47 @@
 
 /* Botones de acción */
 .data-actions {
-  margin-top: 15px;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
   display: flex;
   gap: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--medium-gray);
+  flex-shrink: 0;
+}
+
+.image-actions {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
   flex-shrink: 0;
 }
 
 .btn-edit {
-  background-color: var(--text-gray);
-  color: var(--white);
+  background-color: transparent;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
 }
 
 .btn-edit:hover {
-  background-color: #555555;
+  background-color: var(--primary-blue);
+  color: var(--white);
 }
 
 .btn-done {
-  background-color: var(--primary-green);
+  background-color: var(--primary-blue);
   color: var(--white);
+}
+
+.btn-done:hover {
+  background-color: var(--dark-blue);
+}
+
+.btn-done:disabled {
+  background-color: var(--medium-gray) !important;
+  color: var(--text-gray) !important;
+  opacity: 0.6;
 }
 
 .btn-save {
@@ -199,14 +221,6 @@
   background-color: #1976D2;
 }
 
-/* Botones de navegación */
-.navigation-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
-  gap: 15px;
-  flex-shrink: 0;
-}
 
 .btn-retake {
   background-color: #FF5252;
@@ -218,8 +232,17 @@
 }
 
 .btn-continue {
-  background-color: var(--primary-green);
+  background-color: var(--primary-blue);
   color: var(--white);
+}
+
+.btn-continue:hover {
+  background-color: var(--dark-blue);
+}
+
+.btn-continue:disabled {
+  background-color: var(--medium-gray) !important;
+  color: var(--text-gray) !important;
 }
 
 /* Palomita posicionada en la esquina superior derecha */
@@ -236,4 +259,42 @@
 .reviewed-field {
   background-color: #f8fff8 !important;
   border-left: 4px solid var(--primary-green) !important;
+}
+
+.btn-save:disabled {
+  background-color: var(--medium-gray) !important;
+  color: var(--text-gray) !important;
+}
+
+/* Responsividad mejorada */
+@media (max-width: 1200px) {
+  .json-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .result-container {
+    flex-direction: column;
+  }
+}
+
+/* Corregir visibilidad de botones */
+.btn {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.btn:disabled {
+  opacity: 0.6 !important;
+  background-color: var(--medium-gray) !important;
+  color: var(--text-gray) !important;
+  border-color: var(--medium-gray) !important;
+}
+
+/* Títulos de sección mejorados */
+.data-section h2,
+.image-section h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--dark-gray);
+  margin-bottom: 15px;
 }

@@ -106,7 +106,7 @@ const ResultPage = ({
                   onClick={handleSave} 
                   className="btn btn-save"
                   disabled={isSaved}>
-                  Salvar
+                  Guardar
                 </button>
               )}
             </div>
@@ -119,24 +119,21 @@ const ResultPage = ({
             <img src={imgSrc} alt="Captura de webcam" className="result-img" />
           )}
           <h3 className="id-title">ID: {predictionData.id}</h3>
+          
+          {/* Botón continuar en la sección de imagen */}
+          {!isReviewingFields && (
+            <div className="image-actions">
+              <button 
+                onClick={handleContinue} 
+                className="btn btn-continue"
+                disabled={!isSaved}>
+                Continuar
+              </button>
+            </div>
+          )}
         </div>
       </div>
       
-      {/* Botones de navegación */}
-      {!isReviewingFields && (
-        <div className="navigation-buttons">
-          <button onClick={retakePhoto} className="btn btn-retake">
-            Repetir Foto
-          </button>
-          
-          <button 
-            onClick={handleContinue} 
-            className="btn btn-continue"
-            disabled={!isSaved}>
-            Continuar
-          </button>
-        </div>
-      )}
       
       {/* Botones de revisión campo por campo */}
       {isReviewingFields && (
@@ -152,7 +149,7 @@ const ResultPage = ({
               <span>✏️</span> Editar
             </button>
             <button onClick={handleFieldCheck} className="btn btn-check-field">
-              <span>✓</span> Check {isEditingCurrentField && '(Guardar)'}
+              <span>✓</span> Guardar {isEditingCurrentField}
             </button>
           </div>
           <div className="review-instruction">

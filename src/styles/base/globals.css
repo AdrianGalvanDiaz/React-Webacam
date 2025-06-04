@@ -96,10 +96,12 @@ h2 {
 }
 
 .btn:disabled {
-  background-color: var(--medium-gray);
+  background-color: var(--medium-gray) !important;
+  color: var(--text-gray) !important;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  border-color: var(--medium-gray) !important;
 }
 
 /* Botón secundario */
