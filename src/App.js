@@ -282,20 +282,20 @@ try {
       // Datos dummy
       const dummyData = {
         id: `${Date.now()}`,
-        nombre: "ADRIAN",
-        segundo_nombre: "",
-        apellido_paterno: "GALVAN",
-        apellido_materno: "DIAZ",
-        direccion1: "CCERRO EL NABO 312",
-        direccion2: "COL PRIVADA JURIQUILLA 76226",
-        direccion3: "QUERETARO, QRO",
-        calle: "CCERRO EL NABO",
-        numero_ext: "312",
+        nombre: "AYLEN",
+        segundo_nombre: "FERNANDA",
+        apellido_paterno: "ANDRADE",
+        apellido_materno: "FARIAS",
+        direccion1: "CDA XITLALLI 2982",
+        direccion2: "FRACC CASA MAYA RESIDENCIAL 21255",
+        direccion3: "MEXICALI, B.C.",
+        calle: "CDA XITLALLI",
+        numero_ext: "2982",
         numero_int: "",
-        colonia: "COL PRIVADA JURIQUILLA",
-        codigo_postal: "76230",
-        municipio: "QUERETARO",
-        estado: "QRO",
+        colonia: "FRACC CASA MAYA RESIDENCIAL",
+        codigo_postal: "21255",
+        municipio: "MEXICALI",
+        estado: "B.C.",
         curp: "GADA021008HQTLZR05"
       };
       

@@ -29,6 +29,17 @@
   color: var(--dark-blue);
 }
 
+/* Enlace regresar visible durante revisión */
+.result-page.reviewing .back-link {
+  color: white !important;
+  z-index: 200;
+  position: relative;
+}
+
+.result-page.reviewing .back-link:hover {
+  color: #e0e0e0 !important;
+}
+
 .result-page .subtitle {
   font-size: 1rem;
   font-weight: 400;
