@@ -277,7 +277,7 @@ try {
       console.log('*** MODO LOCAL EJECUTÁNDOSE ***');
       
       // Simular retraso de red
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 6000));
       
       // Datos dummy
       const dummyData = {
@@ -296,7 +296,7 @@ try {
         codigo_postal: "21255",
         municipio: "MEXICALI",
         estado: "B.C.",
-        curp: "GADA021008HQTLZR05"
+        curp: "AAFA020808MBCHS76J"
       };
       
       setPredictionData(dummyData);
