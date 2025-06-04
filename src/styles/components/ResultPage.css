@@ -9,6 +9,41 @@
   overflow: hidden;
 }
 
+/* Mejorar espaciado del header */
+.result-page h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.result-page .back-link {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+
+.result-page .back-link:hover {
+  color: var(--dark-blue);
+}
+
+.result-page .subtitle {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-gray);
+  margin-bottom: 15px;
+  line-height: 1.4;
+}
+
+.result-page .edit-note {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-bottom: 30px;
+}
+
 /* Cuando está en modo revisión, agregar espacio para el panel */
 .result-page.reviewing {
   padding-bottom: 120px;
@@ -102,14 +137,15 @@
   color: var(--dark-gray);
   font-weight: 500;
   text-transform: capitalize;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .json-value {
   color: var(--text-gray);
-  font-size: 17px;
+  font-size: 20px;
   word-break: break-word;
   padding-right: 28px;
+  line-height: 1.3;
 }
 
 .json-input {
@@ -117,10 +153,11 @@
   color: var(--dark-gray);
   border: 1px solid var(--medium-gray);
   border-radius: 4px;
-  padding: 6px 8px;
-  font-size: 17px;
+  padding: 10px 12px;
+  font-size: 20px;
   width: 100%;
   transition: border-color 0.2s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .json-input:focus {

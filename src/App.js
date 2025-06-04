@@ -464,7 +464,7 @@ try {
   };
 
   // Funciones para el flujo de revisión campo por campo
-  const handleFieldCheck = () => {
+const handleFieldCheck = () => {
     if (isEditingCurrentField) {
       // Si estaba editando, guardar los cambios
       setPredictionData(prevData => ({
@@ -481,7 +481,19 @@ try {
     
     // Pasar al siguiente campo
     if (currentFieldIndex < fieldOrder.length - 1) {
-      setCurrentFieldIndex(currentFieldIndex + 1);
+      const nextIndex = currentFieldIndex + 1;
+      setCurrentFieldIndex(nextIndex);
+      
+      // Auto-scroll al siguiente campo
+      setTimeout(() => {
+        const nextField = document.querySelector('.current-field');
+        if (nextField) {
+          nextField.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 100);
     } else {
       // Si llegamos al final, terminar la revisión
       setIsReviewingFields(false);

@@ -23,15 +23,23 @@ const ResultPage = ({
 }) => {
   return (
     <div className={`result-page ${isReviewingFields ? 'reviewing' : ''}`}>
-      <h1>Revisa que los datos sean correctos!</h1>
+      <a href="#" onClick={(e) => { e.preventDefault(); retakePhoto(); }} className="back-link">
+        Regresar
+      </a>
+      <h1 className="page-title">Paso 3: Revisión de datos</h1>
+      <p className="subtitle">
+        Revisa los datos capturados uno por uno, para avanzar haz click en "Continuar". En caso de existir un error, haz click en "Editar", corrige el dato y da click en "guardar" para poder continuar.
+      </p>
+      <p className="edit-note">
+        Podrás editar los campos nuevamente al terminar.
+      </p>      
       
       {/* Overlay gris si estamos en modo revisión */}
       {isReviewingFields && <div className="review-overlay"></div>}
       
       <div className="result-container">
         <div className="data-section">
-          <h2>Datos Detectados</h2>
-          <h3 className="id-title">{predictionData.id}</h3>
+          <h2 className="data-section-divider">Datos Detectados</h2>
           
           {/* Contenedor de datos en dos columnas */}
           <div className="json-display">
@@ -110,6 +118,7 @@ const ResultPage = ({
           {imgSrc && (
             <img src={imgSrc} alt="Captura de webcam" className="result-img" />
           )}
+          <h3 className="id-title">ID: {predictionData.id}</h3>
         </div>
       </div>
       

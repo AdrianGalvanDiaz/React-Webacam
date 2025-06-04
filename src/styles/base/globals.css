@@ -38,6 +38,12 @@ h1 {
   display: none; /* Ocultar el h1 global */
 }
 
+/* Mostrar h1 específicos de página */
+.page-title {
+  display: block !important;
+  text-align: left !important;
+}
+
 h2 {
   color: var(--dark-gray);
   margin-bottom: 15px;
@@ -50,8 +56,13 @@ h2 {
   margin-bottom: 15px;
   font-size: 0.95rem;
   font-weight: 400;
+  padding-bottom: 8px;
+}
+
+.data-section-divider {
   border-bottom: 1px solid var(--medium-gray);
   padding-bottom: 8px;
+  margin-bottom: 15px;
 }
 
 .btn {

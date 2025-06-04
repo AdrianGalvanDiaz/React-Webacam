@@ -68,26 +68,23 @@
 }
 
 .btn-edit-field {
-  background-color: #FFC107;
-  color: var(--dark-gray);
+  background-color: transparent;
+  color: var(--white);
+  border: 2px solid var(--primary-blue);
 }
 
 .btn-edit-field:hover:not(:disabled) {
-  background-color: #FFB300;
-}
-
-.btn-edit-field:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+  background-color: var(--dark-blue);
+  color: var(--white);
 }
 
 .btn-check-field {
-  background-color: var(--primary-green);
+  background-color: var(--primary-blue);
   color: var(--white);
 }
 
 .btn-check-field:hover {
-  background-color: var(--hover-green);
+  background-color: var(--dark-blue);
 }
 
 .review-instruction {
