@@ -44,20 +44,24 @@
 }
 
 .rfc-input-valid {
-  border: 2px solid green;
-  background-color: rgba(0, 128, 0, 0.05);
+  border: 2px solid #4CAF50;
+  background-color: rgba(76, 175, 80, 0.05);
 }
 
 .rfc-error {
   color: red;
   font-size: 14px;
-  margin-top: -10px;
+  margin-top: 5px;
   margin-bottom: 15px;
+  text-align: left;
 }
 
 .rfc-success {
-  color: green;
-  margin: 15px 0;
+  color: #4CAF50;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  text-align: left;
 }
 
 .popup-buttons {
@@ -68,12 +72,16 @@
 }
 
 .btn-validate {
-  background-color: #0077cc;
+  background-color: var(--primary-blue);
   color: white;
 }
 
+.btn-validate:hover {
+  background-color: var(--dark-blue);
+}
+
 .btn-validate:disabled {
-  background-color: #cccccc;
+  background-color: var(--medium-gray);
   cursor: not-allowed;
 }
 
@@ -83,13 +91,24 @@
 }
 
 .btn-primary {
-  background-color: #28a745;
+  background-color: var(--primary-blue);
   color: white;
 }
 
+.btn-primary:hover {
+  background-color: var(--dark-blue);
+}
+
 .btn-primary:disabled {
-  background-color: #cccccc;
+  background-color: var(--medium-gray);
   cursor: not-allowed;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .final-instructions {
@@ -184,4 +203,11 @@
   margin-bottom: 8px;
   color: #555;
   line-height: 1.4;
+}
+
+.rfc-success {
+  color: #4CAF50;
+  font-size: 14px;
+  margin-top: 5px;
+  margin-bottom: 15px;
 }

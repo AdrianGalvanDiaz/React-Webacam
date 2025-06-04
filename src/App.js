@@ -281,7 +281,7 @@ try {
       // Datos dummy
       const dummyData = {
         id: `${Date.now()}`,
-        nombre: "AORIAN",
+        nombre: "ADRIAN",
         segundo_nombre: "",
         apellido_paterno: "GALVAN",
         apellido_materno: "DIAZ",
@@ -568,114 +568,123 @@ const handleFieldCheck = () => {
     // Convertir a mayúsculas
     const uppercaseValue = e.target.value.toUpperCase();
     setRfcText(uppercaseValue);
-    // Resetear error si el usuario está escribiendo
-    if (rfcError) setRfcError(false);
+    // Resetear TODOS los estados de validación cuando el usuario modifica el input
+    setRfcError(false);
+    setRfcValidated(false);
+  }; 
+
+  // Función para cerrar el popup de RFC y resetear estados
+  const closeRfcPopup = () => {
+    setShowRfcPopup(false);
+    setRfcText('');
+    setRfcError(false);
+    setRfcValidated(false);
   };
 
-// Reemplazar la función validateRfc con esta:
-const validateRfc = () => {
-  // Verificar longitud (12 o 13 caracteres)
-  if (rfcText.length !== 12 && rfcText.length !== 13) {
-    setRfcError(true);
-    return;
-  }
-  
-  if (USE_LOCAL_TEST_MODE) {
-    // En modo local, validar solo con un RFC específico
-    if (rfcText === "GADA021008F35") {
+  // Reemplazar la función validateRfc con esta:
+  const validateRfc = () => {
+    // Verificar longitud (12 o 13 caracteres)
+    if (rfcText.length !== 12 && rfcText.length !== 13) {
+      setRfcError(true);
+      return;
+    }
+    
+    if (USE_LOCAL_TEST_MODE) {
+      // En modo local, validar solo con un RFC específico
+      if (rfcText === "GADA021008F35") {
+        setRfcValidated(true);
+        setRfcError(false);
+      } else {
+        setRfcError(true);
+        // Mostrar mensaje personalizado para RFC no válido
+        setRfcErrorMessage("RFC no válido");
+      }
+    } else {
+      // En modo real, solo validamos la longitud por ahora
+      // Aquí iría la validación con el backend
       setRfcValidated(true);
       setRfcError(false);
+    }
+  };
+
+  // Continuar después de validar RFC
+  const continueAfterRfc = () => {
+    setShowRfcPopup(false);
+    setIdCopied(false);
+    
+    if (USE_LOCAL_TEST_MODE) {
+      console.log("Modo local: Mostrando popup final con datos dummy");
+      // Mostrar popup final
+      setShowFinalPopup(true);
     } else {
-      setRfcError(true);
-      // Mostrar mensaje personalizado para RFC no válido
-      setRfcErrorMessage("RFC no válido");
+      // Aquí iría la integración con el backend para validar el RFC
+      console.log("En modo real: Aquí se implementará la validación con el backend");
+      // Por ahora, solo mostramos el popup final
+      setShowFinalPopup(true);
     }
-  } else {
-    // En modo real, solo validamos la longitud por ahora
-    // Aquí iría la validación con el backend
-    setRfcValidated(true);
+  };
+
+  // Cerrar el popup final y regresar a la pantalla inicial
+  const closeAndReset = () => {
+    // Verificar si se ha copiado el ID
+    if (!idCopied) {
+      // Mostrar una confirmación si no se ha copiado
+      if (!window.confirm('No has copiado el ID. ¿Estás seguro que deseas continuar sin copiar el ID?')) {
+        return; // Si el usuario cancela, no continuar
+      }
+    }
+    
+    setShowFinalPopup(false);
+    // Resetear estados pero sin activar la cámara
+    setCurrentPage('captura');
+    setIsCameraEnabled(false);
+    setImgSrc(null);
+    setIsSaved(false);
+    setIsReviewingFields(false);
+    setCurrentFieldIndex(0);
+    setReviewedFields(new Set());
+    setRfcText('');
+    setRfcValidated(false);
     setRfcError(false);
-  }
-};
+    setCopyButtonText('Copiar');
+    setIdCopied(false);
 
-// Continuar después de validar RFC
-const continueAfterRfc = () => {
-  setShowRfcPopup(false);
-  setIdCopied(false);
-  
-  if (USE_LOCAL_TEST_MODE) {
-    console.log("Modo local: Mostrando popup final con datos dummy");
-    // Mostrar popup final
-    setShowFinalPopup(true);
-  } else {
-    // Aquí iría la integración con el backend para validar el RFC
-    console.log("En modo real: Aquí se implementará la validación con el backend");
-    // Por ahora, solo mostramos el popup final
-    setShowFinalPopup(true);
-  }
-};
+    // Resetear estados de calidad
+    setShowQualityWarning(false);
+    setDetectionQualityPoor(false);  
+  };
 
-// Cerrar el popup final y regresar a la pantalla inicial
-const closeAndReset = () => {
-  // Verificar si se ha copiado el ID
-  if (!idCopied) {
-    // Mostrar una confirmación si no se ha copiado
-    if (!window.confirm('No has copiado el ID. ¿Estás seguro que deseas continuar sin copiar el ID?')) {
-      return; // Si el usuario cancela, no continuar
-    }
-  }
-  
-  setShowFinalPopup(false);
-  // Resetear estados pero sin activar la cámara
-  setCurrentPage('captura');
-  setIsCameraEnabled(false);
-  setImgSrc(null);
-  setIsSaved(false);
-  setIsReviewingFields(false);
-  setCurrentFieldIndex(0);
-  setReviewedFields(new Set());
-  setRfcText('');
-  setRfcValidated(false);
-  setRfcError(false);
-  setCopyButtonText('Copiar');
-  setIdCopied(false);
+  // Nueva función para regresar a la pantalla de resultados
+  const backToResults = () => {
+    setShowFinalPopup(false);
+    // No reiniciamos todos los estados, solo cerramos el popup
+  };
 
-  // Resetear estados de calidad
-  setShowQualityWarning(false);
-  setDetectionQualityPoor(false);  
-};
+  // Nueva función para iniciar una nueva captura desde el popup
+  const startNewCapture = () => {
+    setShowFinalPopup(false); // Primero cerrar el popup
+    retakePhoto(); // Luego llamar a la función existente para reiniciar el proceso
+  };
 
-// Nueva función para regresar a la pantalla de resultados
-const backToResults = () => {
-  setShowFinalPopup(false);
-  // No reiniciamos todos los estados, solo cerramos el popup
-};
+  // Función para cerrar el popup de advertencia de calidad
+  const closeQualityWarning = () => {
+    setShowQualityWarning(false);
+  };
 
-// Nueva función para iniciar una nueva captura desde el popup
-const startNewCapture = () => {
-  setShowFinalPopup(false); // Primero cerrar el popup
-  retakePhoto(); // Luego llamar a la función existente para reiniciar el proceso
-};
-
-// Función para cerrar el popup de advertencia de calidad
-const closeQualityWarning = () => {
-  setShowQualityWarning(false);
-};
-
-// Función para copiar ID al portapapeles
-const copyIdToClipboard = () => {
-  navigator.clipboard.writeText(predictionData.id)
-    .then(() => {
-      console.log('ID copiado al portapapeles');
-      setCopyButtonText('Copiado!');
-      setIdCopied(true);
-      // Opcional: volver al texto original después de un tiempo
-      setTimeout(() => setCopyButtonText('Copiar'), 3000);
-    })
-    .catch(err => {
-      console.error('Error al copiar: ', err);
-    });
-};
+  // Función para copiar ID al portapapeles
+  const copyIdToClipboard = () => {
+    navigator.clipboard.writeText(predictionData.id)
+      .then(() => {
+        console.log('ID copiado al portapapeles');
+        setCopyButtonText('Copiado!');
+        setIdCopied(true);
+        // Opcional: volver al texto original después de un tiempo
+        setTimeout(() => setCopyButtonText('Copiar'), 3000);
+      })
+      .catch(err => {
+        console.error('Error al copiar: ', err);
+      });
+  };
 
   // Actualizar efecto para detectar cuando la resolución real esté disponible
   useEffect(() => {
@@ -790,7 +799,7 @@ const copyIdToClipboard = () => {
         rfcErrorMessage={rfcErrorMessage}
         handleRfcChange={handleRfcChange}
         validateRfc={validateRfc}
-        setShowRfcPopup={setShowRfcPopup}
+        closeRfcPopup={closeRfcPopup}
         continueAfterRfc={continueAfterRfc}
       />
       

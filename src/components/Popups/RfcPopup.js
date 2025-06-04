@@ -8,12 +8,33 @@ const RfcPopup = ({
   rfcErrorMessage,
   handleRfcChange,
   validateRfc,
-  setShowRfcPopup,
+  closeRfcPopup,
   continueAfterRfc
 }) => {
   return (
     <div className="popup-overlay" style={{ display: showRfcPopup ? 'flex' : 'none' }}>
-      <div className="popup-content">
+      <div className="popup-content" style={{ position: 'relative' }}>
+        <button 
+          className="close-btn" 
+          onClick={closeRfcPopup}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '15px',
+            background: 'none',
+            border: 'none',
+            fontSize: '24px',
+            color: '#666',
+            cursor: 'pointer',
+            width: '30px',
+            height: '30px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          ×
+        </button>
         <h2>Captura y valida el RFC del cliente</h2>
         
         <div className="rfc-input-container">
@@ -22,7 +43,7 @@ const RfcPopup = ({
             value={rfcText}
             onChange={handleRfcChange}
             placeholder="Ingresa el RFC"
-            className={`rfc-input ${rfcText.length > 0 && (rfcText.length < 12 || rfcText.length > 13) ? 'rfc-input-error' : ''} ${(rfcText.length === 12 || rfcText.length === 13) ? 'rfc-input-valid' : ''}`}
+            className={`rfc-input ${(rfcText.length > 0 && rfcText.length < 12) || (rfcError && rfcText.length >= 12) ? 'rfc-input-error' : ''} ${rfcValidated ? 'rfc-input-valid' : ''}`}
             style={{ 
               color: 'black'
             }}
@@ -38,20 +59,15 @@ const RfcPopup = ({
           </button>
         </div>
         
-        {rfcError && (
+        {rfcValidated ? (
+          <p className="rfc-success">Validación exitosa</p>
+        ) : rfcError && (rfcText.length === 12 || rfcText.length === 13) ? (
           <p className="rfc-error">{rfcErrorMessage}</p>
-        )}
-        
-        {rfcValidated && (
-          <div className="rfc-success">
-            <p>Validación exitosa</p>
-          </div>
-        )}
-        
+        ) : rfcText.length > 0 && (rfcText.length < 12 || rfcText.length > 13) ? (
+          <p className="rfc-error">El RFC debe contener 12 o 13 caracteres alfanuméricos</p>
+        ) : null}
+
         <div className="popup-buttons">
-          <button onClick={() => setShowRfcPopup(false)} className="btn btn-secondary">
-            Regresar
-          </button>
           <button 
             onClick={continueAfterRfc} 
             className="btn btn-primary"
