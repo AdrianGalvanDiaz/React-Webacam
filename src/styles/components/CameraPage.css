@@ -453,7 +453,7 @@
 }
 
 .camera-capture-header {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .camera-capture-header .step-title-with-help {
@@ -468,7 +468,8 @@
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--dark-gray);
-  margin: 0;
+  margin-bottom: 15px;
+  margin-top: 25px;
 }
 
 .camera-capture-header .help-btn-small {
@@ -497,7 +498,7 @@
   font-weight: 400;
   color: var(--text-gray);
   font-style: normal;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 
 /* Controles de cámara reorganizados */
@@ -538,4 +539,67 @@
   margin-bottom: 12px;
   line-height: 1.4;
   font-style: normal;
+}
+
+/* Popup mejorado con imagen */
+.help-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  border: 1px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow-large);
+  z-index: 1000;
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* Responsividad para el popup */
+@media (min-width: 1600px) {
+  .help-popup {
+    max-width: 1000px;
+    padding: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .help-popup {
+    width: 95%;
+    padding: 25px;
+    max-height: 90vh;
+  }
+}
+
+/* Responsividad para pantallas grandes */
+@media (min-width: 1600px) {
+  .capture-page-initial,
+  .capture-page-device-selection,
+  .capture-page-camera-active {
+    padding: 60px 80px;
+  }
+  
+  .capture-page-initial h1 {
+    font-size: 2.5rem;
+  }
+  
+  .step-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .capture-page-initial,
+  .capture-page-device-selection,
+  .capture-page-camera-active {
+    padding: 25px;
+  }
+  
+  .step-title {
+    font-size: 1.3rem;
+  }
 }

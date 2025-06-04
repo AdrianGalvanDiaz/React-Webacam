@@ -82,12 +82,7 @@ const CapturePage = ({
             <a href="#" onClick={(e) => { e.preventDefault(); setIsCameraEnabled(false); }} style={{color: 'var(--primary-blue)', textDecoration: 'underline'}}>
               Regresar
             </a>
-            <div className="step-title-with-help">
               <h2 className="step-title">Paso 2: Captura</h2>
-              <button className="help-btn-small" onClick={() => setShowIdGuide(!showIdGuide)}>
-                ?
-              </button>
-            </div>
             <p className="step-description">
               Coloca la identificación del cliente en el escáner con los datos y fotografía hacia abajo. Haz click en el botón "Tomar foto"
             </p>
@@ -197,13 +192,51 @@ const CapturePage = ({
             <button className="close-btn" onClick={() => setShowHelpPopup(false)}>
               ×
             </button>
-            <h3>¿Cómo se debería ver la identificación?</h3>
-            <ul>
-              <li>Verifica que la identificación haya sido colocada correctamente con los datos y la foto hacia abajo</li>
-              <li>Verifica que se haya seleccionado la cámara correcta</li>
-              <li>Verifica que la INE se vea legible y clara, con todos los caracteres visibles</li>
-              <li>Haz clic en el botón "?" junto al título para ver la guía visual de posicionamiento</li>
-            </ul>
+            <h3>Guía de posicionamiento</h3>
+            
+            <div style={{
+              backgroundColor: '#1a1a1a',
+              borderRadius: '12px',
+              padding: '30px 20px',
+              margin: '20px 0',
+              textAlign: 'center',
+              border: '1px solid #333'
+            }}>
+              <img 
+                src="/credencial-votar.png" 
+                alt="Guía de colocación de INE" 
+                style={{
+                  maxWidth: '280px',
+                  height: 'auto',
+                  border: '2px solid #4CAF50',
+                  borderRadius: '8px',
+                  marginBottom: '12px'
+                }}
+              />              
+              <p style={{color: '#4CAF50', fontSize: '14px', fontWeight: '600', margin: '8px 0'}}>
+                ✓ Posición correcta
+              </p>
+              <p style={{color: '#ffffff', fontSize: '13px', margin: '5px 0'}}>
+                Datos y foto hacia abajo, documento completamente visible
+              </p>
+            </div>
+
+            <div style={{marginTop: '20px'}}>
+              <h4 style={{fontSize: '16px', marginBottom: '15px', color: 'var(--dark-gray)'}}>
+                Antes de capturar, verifica:
+              </h4>
+              <ol style={{margin: '0', paddingLeft: '20px', lineHeight: '1.6'}}>
+                <li style={{marginBottom: '10px', color: 'var(--text-gray)'}}>
+                  <strong>Cámara seleccionada:</strong> Debe ser la correcta del escáner
+                </li>
+                <li style={{marginBottom: '10px', color: 'var(--text-gray)'}}>
+                  <strong>Documento visible:</strong> Toda la INE debe aparecer en pantalla
+                </li>
+                <li style={{marginBottom: '10px', color: 'var(--text-gray)'}}>
+                  <strong>Texto legible:</strong> Todos los caracteres se ven claros y nítidos
+                </li>
+              </ol>
+            </div>
           </div>
         </>
       )}
