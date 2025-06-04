@@ -130,7 +130,7 @@
 .id-code {
   font-size: 24px;
   font-weight: bold;
-  color: #28a745;
+  color: #333333;
 }
 
 .btn-copy {
@@ -210,4 +210,52 @@
   font-size: 14px;
   margin-top: 5px;
   margin-bottom: 15px;
+}
+
+.btn-copy {
+  background-color: var(--dark-blue);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.btn-copy:hover {
+  background-color: var(--medium-blue);
+}
+
+.btn-copy.copied {
+  background-color: transparent;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
+}
+
+.btn-copy.copied:hover {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.btn-retake-new {
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-retake-new:hover {
+  background-color: var(--dark-blue);
 }

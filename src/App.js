@@ -123,6 +123,7 @@ const [detectionQualityPoor, setDetectionQualityPoor] = useState(false);
   const [rfcText, setRfcText] = useState('');
   const [rfcError, setRfcError] = useState(false);
   const [rfcValidated, setRfcValidated] = useState(false);
+  const [hasEverCopied, setHasEverCopied] = useState(false);
   
   // Función para obtener los dispositivos disponibles
   const handleDevices = useCallback(
@@ -550,7 +551,9 @@ const handleFieldCheck = () => {
   };
 
   const handleContinue = () => {
-    // Mostrar el popup de RFC en lugar de mostrar un alert
+    // Resetear estados antes de mostrar RFC
+    resetAllPopupStates();
+    // Mostrar el popup de RFC
     setShowRfcPopup(true);
   };
 
@@ -573,12 +576,28 @@ const handleFieldCheck = () => {
     setRfcValidated(false);
   }; 
 
-  // Función para cerrar el popup de RFC y resetear estados
-  const closeRfcPopup = () => {
-    setShowRfcPopup(false);
+  // Función para resetear todo el flujo de RFC y Final
+  const resetAllPopupStates = () => {
+    // Estados RFC
     setRfcText('');
     setRfcError(false);
     setRfcValidated(false);
+    
+    // Estados Final
+    setIdCopied(false);
+    setHasEverCopied(false);
+  };
+
+  // Función para cerrar el popup de RFC
+  const closeRfcPopup = () => {
+    setShowRfcPopup(false);
+    resetAllPopupStates();
+  };
+
+  // Función para cerrar el popup final
+  const closeFinalPopup = () => {
+    setShowFinalPopup(false);
+    resetAllPopupStates();
   };
 
   // Reemplazar la función validateRfc con esta:
@@ -676,10 +695,12 @@ const handleFieldCheck = () => {
     navigator.clipboard.writeText(predictionData.id)
       .then(() => {
         console.log('ID copiado al portapapeles');
-        setCopyButtonText('Copiado!');
         setIdCopied(true);
-        // Opcional: volver al texto original después de un tiempo
-        setTimeout(() => setCopyButtonText('Copiar'), 3000);
+        setHasEverCopied(true);
+        // Volver al estado original después de 5 segundos
+        setTimeout(() => {
+          setIdCopied(false);
+        }, 5000);
       })
       .catch(err => {
         console.error('Error al copiar: ', err);
@@ -808,8 +829,9 @@ const handleFieldCheck = () => {
         predictionData={predictionData}
         copyButtonText={copyButtonText}
         idCopied={idCopied}
+        hasEverCopied={hasEverCopied}
         copyIdToClipboard={copyIdToClipboard}
-        backToResults={backToResults}
+        closeFinalPopup={closeFinalPopup}
         startNewCapture={startNewCapture}
       />
       
