@@ -14,8 +14,8 @@
   position: relative;
   z-index: 101 !important;
   background-color: var(--white) !important;
-  border: 2px solid var(--primary-green) !important;
-  box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
+  border: 2px solid var#FFFFFF !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
   transform: scale(1.02);
 }
 
@@ -130,7 +130,6 @@
   background-color: rgba(0, 0, 0, 0.75);
   z-index: 50;
   pointer-events: none;
-  border-radius: 0 0 var(--border-radius) var(--border-radius); /* Solo esquinas inferiores redondeadas */
 }
 
 /* Asegurar que el contenido de la imagen esté por encima */
