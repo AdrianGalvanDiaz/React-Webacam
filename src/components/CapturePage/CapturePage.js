@@ -82,7 +82,7 @@ const CapturePage = ({
             <a href="#" onClick={(e) => { e.preventDefault(); setIsCameraEnabled(false); }} style={{color: 'var(--primary-blue)', textDecoration: 'underline'}}>
               Regresar
             </a>
-              <h2 className="step-title">Paso 2: Captura</h2>
+              <h2 className="step-title">Paso 2: Captura de identificación</h2>
             <p className="step-description">
               Coloca la identificación del cliente en el escáner con los datos y fotografía hacia abajo. Haz click en el botón "Tomar foto"
             </p>

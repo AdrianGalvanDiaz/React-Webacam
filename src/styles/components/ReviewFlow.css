@@ -117,3 +117,26 @@
 .review-overlay ~ .result-page .review-controls {
   pointer-events: all;
 }
+
+/* Overlay específico para la sección de imagen durante revisión */
+/* Overlay específico para la sección de imagen durante revisión */
+.result-page.reviewing .image-section::after {
+  content: '';
+  position: absolute;
+  top: 460px; /* Empieza después del ID */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  z-index: 50;
+  pointer-events: none;
+  border-radius: 0 0 var(--border-radius) var(--border-radius); /* Solo esquinas inferiores redondeadas */
+}
+
+/* Asegurar que el contenido de la imagen esté por encima */
+.result-page.reviewing .image-section h2,
+.result-page.reviewing .image-section .result-img,
+.result-page.reviewing .image-section .id-title {
+  position: relative;
+  z-index: 60;
+}

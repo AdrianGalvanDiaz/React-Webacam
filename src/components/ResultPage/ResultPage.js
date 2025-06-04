@@ -31,7 +31,6 @@ const ResultPage = ({
         Revisa los datos capturados uno por uno, para avanzar haz click en "Continuar". En caso de existir un error, haz click en "Editar", corrige el dato y da click en "guardar" para poder continuar.
       </p>
       <p className="edit-note">
-        Podrás editar los campos nuevamente al terminar.
       </p>      
       
       {/* Overlay gris si estamos en modo revisión */}

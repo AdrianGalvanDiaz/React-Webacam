@@ -83,16 +83,23 @@
   box-shadow: var(--shadow-medium);
   overflow: hidden;
   position: relative;
+  max-height: fit-content;
 }
 
-.result-img {
+.image-section .result-img {
   max-width: 100%;
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-medium);
   object-fit: cover;
-  height: calc(100vh - 250px);
-  max-height: 450px;
+  height: auto;
+  max-height: 350px;
 }
+
+.image-section .id-title {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
 
 /* Visualización de datos optimizada */
 .json-display {
