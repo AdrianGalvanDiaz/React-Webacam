@@ -140,3 +140,11 @@
   position: relative;
   z-index: 60;
 }
+
+/* Asegurar que el contenido de la imagen esté por encima */
+.result-page.reviewing .image-section h2,
+.result-page.reviewing .image-section .result-img,
+.result-page.reviewing .image-section .id-title {
+  position: relative;
+  z-index: 60;
+}
