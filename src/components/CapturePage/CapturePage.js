@@ -58,7 +58,7 @@ const CapturePage = ({
             </a>
             <h2 className="step-title">Paso 1: Selección de dispositivo</h2>
             <p className="step-description">
-              Selecciona la cámara para escanear el documento. El nombre de la cámara debería aparecer como "LGT - WEBCAM X"
+              <strong>Selecciona de la lista la cámara que tenga la palabra "WEBCAM"</strong> en su nombre. Esta será la cámara utilizada para escanear el documento.
             </p>
             <span className="help-link" onClick={() => setShowHelpPopup(true)}>
               No veo la cámara

@@ -698,8 +698,46 @@ const handleFieldCheck = () => {
 
   // Nueva función para iniciar una nueva captura desde el popup
   const startNewCapture = () => {
-    setShowFinalPopup(false); // Primero cerrar el popup
-    retakePhoto(); // Luego llamar a la función existente para reiniciar el proceso
+    setShowFinalPopup(false); // Cerrar el popup
+    resetAllPopupStates(); // Resetear estados de popups
+    
+    // Resetear todos los estados para volver a pantalla 1
+    setCurrentPage('captura');
+    setIsCameraEnabled(false);
+    setDevices([]);
+    setImgSrc(null);
+    setIsSaved(false);
+    setIsReviewingFields(false);
+    setCurrentFieldIndex(0);
+    setReviewedFields(new Set());
+    setIsEditing(false);
+    
+    // Resetear datos
+    setPredictionData({
+      id: '',
+      nombre: '',
+      segundo_nombre: '',
+      apellido_paterno: '',
+      apellido_materno: '',
+      direccion1: '',
+      direccion2: '',
+      direccion3: '',
+      calle: '',
+      numero_ext: '',
+      numero_int: '',
+      colonia: '',
+      codigo_postal: '',
+      municipio: '',
+      estado: '',
+      curp: ''
+    });
+    
+    // Limpiar estados de upload
+    setUploading(false);
+    setUploadProgress(0);
+    setUploadError(null);
+    setShowQualityWarning(false);
+    setDetectionQualityPoor(false);
   };
 
   // Función para cerrar el popup de advertencia de calidad
