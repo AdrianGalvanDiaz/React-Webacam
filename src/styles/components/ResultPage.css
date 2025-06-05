@@ -100,7 +100,7 @@
   box-shadow: var(--shadow-medium);
   object-fit: cover;
   height: auto;
-  max-height: 350px;
+  max-height: 500px;
 }
 
 .image-section .id-title {

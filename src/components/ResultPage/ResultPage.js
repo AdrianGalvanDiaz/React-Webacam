@@ -96,7 +96,7 @@ const ResultPage = ({
               
               {isEditing && (
                 <button onClick={handleDoneEditing} className="btn btn-done">
-                  Listo!
+                   ¡Listo!
                 </button>
               )}
               
