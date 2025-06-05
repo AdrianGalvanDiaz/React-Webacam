@@ -112,12 +112,17 @@ const ResultPage = ({
           )}
         </div>
         
-        <div className="image-section" style={{ position: 'relative', zIndex: isReviewingFields ? 1000 : 1 }}>
-          <h2>Imagen Capturada</h2>
-          {imgSrc && (
-            <img src={imgSrc} alt="Captura de webcam" className="result-img" />
+        <div className={`image-section ${isReviewingFields ? 'review-placeholder' : ''}`} style={{ position: 'relative', zIndex: isReviewingFields ? 50 : 1 }}>
+          
+          {/* Contenido normal cuando no está en revisión */}
+          {!isReviewingFields && (
+            <>
+              <h2>Imagen Capturada</h2>
+              {imgSrc && (
+                <img src={imgSrc} alt="Captura de webcam" className="result-img" />
+              )}
+            </>
           )}
-          <h3 className="id-title">ID: {predictionData.id}</h3>
           
           {/* Botón continuar en la sección de imagen */}
           {!isReviewingFields && (
@@ -133,26 +138,43 @@ const ResultPage = ({
         </div>
       </div>
       
+      {/* Texto sobre overlay durante revisión */}
+      {isReviewingFields && (
+        <>
+          <div className="review-overlay-text">
+            <div className="main-instruction">
+              Presiona Enter o haz clic en ✓ para continuar
+            </div>
+            <div className="sub-instruction">
+              Podrás editar nuevamente los campos al terminar
+            </div>
+          </div>
+          
+          {/* Imagen e ID fijos durante revisión */}
+          <div className="image-fixed-content">
+            <h2>Imagen Capturada</h2>
+            {imgSrc && (
+              <img src={imgSrc} alt="Captura de webcam" className="result-img" />
+            )}
+            <h3 className="id-title">ID: {predictionData.id}</h3>
+          </div>
+        </>
+      )}
       
+
       {/* Botones de revisión campo por campo */}
       {isReviewingFields && (
         <div className="review-controls">
-          <div className="review-progress">
+          <div className="review-field-info">
             Campo {currentFieldIndex + 1} de {fieldOrder.length}: {fieldOrder[currentFieldIndex].replace(/_/g, ' ')}
-          </div>
-          <div className="review-progress"> 
-            Podrás editar los campos al terminar!
           </div>
           <div className="review-buttons">
             <button onClick={handleFieldEdit} className="btn btn-edit-field" disabled={isEditingCurrentField}>
               <span>✏️</span> Editar
             </button>
             <button onClick={handleFieldCheck} className="btn btn-check-field">
-              <span>✓</span> Guardar {isEditingCurrentField}
+              <span>✓</span> Siguiente
             </button>
-          </div>
-          <div className="review-instruction">
-            Presiona Enter o haz clic en ✓ para continuar
           </div>
         </div>
       )}

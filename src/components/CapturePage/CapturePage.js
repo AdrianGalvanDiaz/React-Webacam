@@ -23,6 +23,8 @@ const CapturePage = ({
   showHelpPopup,
   setShowHelpPopup,
   isCameraReady,
+  showInitialGuide,
+  confirmInitialGuide,  
   renderResolutionInfo
 }) => {
   return (
@@ -237,6 +239,74 @@ const CapturePage = ({
                   <strong>Texto legible:</strong> Todos los caracteres se ven claros y nítidos
                 </li>
               </ol>
+            </div>
+          </div>
+        </>
+      )}
+      {/* Popup inicial de guía automática */}
+      {showInitialGuide && (
+        <>
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999
+          }} onClick={confirmInitialGuide}></div>
+          
+          <div className="help-popup">
+            <h3>Guía de posicionamiento</h3>
+            
+            <div style={{
+              backgroundColor: '#1a1a1a',
+              borderRadius: '12px',
+              padding: '30px 20px',
+              margin: '20px 0',
+              textAlign: 'center',
+              border: '1px solid #333'
+            }}>
+              <img 
+                src="/credencial-votar.png" 
+                alt="Guía de colocación de INE" 
+                style={{
+                  maxWidth: '280px',
+                  height: 'auto',
+                  border: '2px solid #4CAF50',
+                  borderRadius: '8px',
+                  marginBottom: '12px'
+                }}
+              />
+              <p style={{color: '#4CAF50', fontSize: '14px', fontWeight: '600', margin: '8px 0'}}>
+                ✓ Posición correcta
+              </p>
+              <p style={{color: '#ffffff', fontSize: '13px', margin: '5px 0'}}>
+                Datos y foto hacia abajo, documento completamente visible
+              </p>
+            </div>
+
+            <div style={{marginTop: '20px'}}>
+              <h4 style={{fontSize: '16px', marginBottom: '15px', color: 'var(--dark-gray)'}}>
+                Antes de capturar, verifica:
+              </h4>
+              <ol style={{margin: '0', paddingLeft: '20px', lineHeight: '1.6'}}>
+                <li style={{marginBottom: '10px', color: 'var(--text-gray)'}}>
+                  <strong>Cámara seleccionada:</strong> Debe ser la correcta del escáner
+                </li>
+                <li style={{marginBottom: '10px', color: 'var(--text-gray)'}}>
+                  <strong>Documento visible:</strong> Toda la INE debe aparecer en pantalla
+                </li>
+                <li style={{marginBottom: '10px', color: 'var(--text-gray)'}}>
+                  <strong>Texto legible:</strong> Todos los caracteres se ven claros y nítidos
+                </li>
+              </ol>
+            </div>
+            
+            <div style={{textAlign: 'center', marginTop: '20px'}}>
+              <button onClick={confirmInitialGuide} className="btn" style={{minWidth: '120px'}}>
+                Confirmo
+              </button>
             </div>
           </div>
         </>

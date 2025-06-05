@@ -26,6 +26,7 @@ function App() {
   // Estado para visibilidad de la guia
   const [showIdGuide, setShowIdGuide] = useState(false);
   const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [showInitialGuide, setShowInitialGuide] = useState(false);
 
   // Nuevo estado para el status de resolución
   const [resolutionStatus, setResolutionStatus] = useState('checking'); // 'good', 'suboptimal', 'checking'
@@ -186,6 +187,7 @@ const [detectionQualityPoor, setDetectionQualityPoor] = useState(false);
     setIsCameraEnabled(true);
     setIsCameraReady(false);
     setResolutionStatus('checking');
+    setShowInitialGuide(true);
     
     // Iniciar el proceso de búsqueda de resolución óptima
     setTimeout(() => {
@@ -196,6 +198,10 @@ const [detectionQualityPoor, setDetectionQualityPoor] = useState(false);
     setTimeout(() => {
       setIsCameraReady(true);
     }, 2000);
+  };
+
+  const confirmInitialGuide = () => {
+    setShowInitialGuide(false);
   };
 
   // Función para extraer el resultado correcto de la respuesta
@@ -492,13 +498,17 @@ const handleFieldCheck = () => {
       const nextIndex = currentFieldIndex + 1;
       setCurrentFieldIndex(nextIndex);
       
-      // Auto-scroll al siguiente campo
+      // Auto-scroll al siguiente campo con offset para el footer
       setTimeout(() => {
         const nextField = document.querySelector('.current-field');
         if (nextField) {
-          nextField.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
+          const fieldRect = nextField.getBoundingClientRect();
+          const footerHeight = 120; // Altura aproximada del footer
+          const offset = fieldRect.top + window.scrollY - footerHeight;
+          
+          window.scrollTo({
+            top: offset,
+            behavior: 'smooth'
           });
         }
       }, 100);
@@ -795,6 +805,8 @@ const handleFieldCheck = () => {
           showHelpPopup={showHelpPopup}
           setShowHelpPopup={setShowHelpPopup}
           isCameraReady={isCameraReady}
+          showInitialGuide={showInitialGuide}
+          confirmInitialGuide={confirmInitialGuide}          
           renderResolutionInfo={renderResolutionInfo}
         />     
       ) : (
