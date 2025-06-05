@@ -1,8 +1,9 @@
 /* Estilos para la página de captura */
 .capture-page {
-  background: var(--white);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-medium);
+  background: transparent;
+  border-radius: 0;
+  padding: 40px;
+  box-shadow: none;
   max-width: none;
 }
 
@@ -258,10 +259,10 @@
 
 /* Estilos para la pantalla inicial mejorada */
 .capture-page-initial {
-  background: var(--white);
-  border-radius: var(--border-radius);
+  background: transparent;
+  border-radius: 0;
   padding: 60px 40px;
-  box-shadow: var(--shadow-medium);
+  box-shadow: none;
   max-width: none;
   text-align: center;
   min-height: 80vh;
@@ -273,7 +274,7 @@
 }
 
 .capture-page-initial h1 {
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 600;
   color: var(--dark-gray);
   margin-bottom: 10px;
@@ -281,7 +282,7 @@
 }
 
 .capture-page-initial .subtitle {
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   font-weight: 400;
   color: var(--text-gray);
   font-style: normal;
@@ -303,17 +304,17 @@
 }
 
 .capture-page-initial .btn {
-  font-size: 18px;
+  font-size: 19px;
   padding: 16px 32px;
   min-width: 250px;
 }
 
 /* Estilos para la pantalla de selección de dispositivos */
 .capture-page-device-selection {
-  background: var(--white);
-  border-radius: var(--border-radius);
+  background: transparent;
+  border-radius: 0;
   padding: 15px 40px 40px 40px;
-  box-shadow: var(--shadow-medium);
+  box-shadow: none;
   max-width: none;
 }
 
@@ -440,10 +441,10 @@
 
 /* Estilos para la pantalla de captura con cámara activa */
 .capture-page-camera-active {
-  background: var(--white);
-  border-radius: var(--border-radius);
+  background: transparent;
+  border-radius: 0;
   padding: 15px 40px 40px 40px;
-  box-shadow: var(--shadow-medium);
+  box-shadow: none;
   max-width: none;
 }
 
