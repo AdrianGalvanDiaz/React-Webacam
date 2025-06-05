@@ -1,0 +1,605 @@
+/* Estilos para la página de captura */
+.capture-page {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow-medium);
+  max-width: none;
+}
+
+.webcam-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.webcam {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.captured-image {
+  width: 100%;
+  max-width: 640px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  object-fit: contain;
+}
+
+/* Estilos para la guía de colocación de ID */
+.webcam-container {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.id-guide-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.id-guide-container.hidden {
+  opacity: 0;
+}
+
+.id-guide-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 8px;
+  max-width: 90%;
+}
+
+.id-guide-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 10px;
+  border: 2px solid white;
+  border-radius: 4px;
+}
+
+.id-guide-text {
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.id-guide-text p {
+  margin: 5px 0;
+}
+
+.btn-guide {
+  background-color: #ff9800;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-guide:hover {
+  background-color: #f57c00;
+  transform: scale(1.05);
+}
+
+.resolution-info {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+  z-index: 10;
+}
+
+.resolution-check {
+  display: inline-block;
+  margin-left: 10px;
+  background-color: var(--primary-green);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: white;
+}
+
+.resolution-warning {
+  display: inline-block;
+  margin-left: 10px;
+  background-color: rgba(255, 193, 7, 0.9);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #000;
+  font-weight: bold;
+}
+
+.check-icon {
+  font-weight: bold;
+  color: #00ff00;
+}
+
+.devices-container {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.device-list {
+  margin-top: 20px;
+}
+
+.device-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  margin: 10px 0;
+  background-color: var(--light-gray);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--medium-gray);
+}
+
+.device-item span {
+  color: var(--text-gray);
+}
+
+.camera-container {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.camera-controls {
+  margin: 15px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.resolution-buttons {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-resolution {
+  background-color: var(--medium-gray);
+  color: var(--dark-gray);
+  border: 1px solid var(--medium-gray);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-resolution:hover {
+  background-color: #d0d0d0;
+  border-color: var(--dark-gray);
+}
+
+.btn-resolution-active {
+  background-color: var(--primary-green);
+  color: var(--white);
+  border-color: var(--primary-green);
+}
+
+.btn-resolution::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+}
+
+.btn-resolution:active::after {
+  width: 100%;
+  height: 100%;
+}
+
+/* Estilos para indicadores de progreso de upload */
+.upload-progress {
+  margin: 10px 0;
+  text-align: center;
+  padding: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #4CAF50;
+  transition: width 0.3s ease;
+}
+
+.upload-error {
+  color: #ff0000;
+  text-align: center;
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffebee;
+  border-radius: 5px;
+  border: 1px solid #ffcdd2;
+}
+
+/* Estilos para la pantalla inicial mejorada */
+.capture-page-initial {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 60px 40px;
+  box-shadow: var(--shadow-medium);
+  max-width: none;
+  text-align: center;
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+}
+
+.capture-page-initial h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 10px;
+  display: block; /* Mostrar solo el h1 de la pantalla inicial */
+}
+
+.capture-page-initial .subtitle {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text-gray);
+  font-style: normal;
+  margin-bottom: 40px;
+}
+
+.capture-page-initial .coppel-logo {
+  width: auto;
+  height: 40px;
+  margin-top: 60px;
+  margin-bottom: 5px;
+}
+
+.capture-page-initial .coppel-year {
+  font-size: 0.9rem;
+  color: var(--text-gray);
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.capture-page-initial .btn {
+  font-size: 18px;
+  padding: 16px 32px;
+  min-width: 250px;
+}
+
+/* Estilos para la pantalla de selección de dispositivos */
+.capture-page-device-selection {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow-medium);
+  max-width: none;
+}
+
+.capture-page-device-selection h1 {
+  display: block;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 15px;
+}
+
+.device-selection-header {
+  margin-bottom: 40px;
+}
+
+.device-selection-header .step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.device-selection-header .step-description {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-gray);
+  font-style: normal;
+  margin-bottom: 15px;
+}
+
+.device-selection-header .help-link {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.device-selection-header .help-link:hover {
+  color: var(--dark-blue);
+}
+
+.help-link {
+  color: var(--primary-blue);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.help-link:hover {
+  color: var(--dark-blue);
+}
+
+/* Popup de ayuda mejorado */
+.help-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  border: 1px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  box-shadow: var(--shadow-large);
+  z-index: 1000;
+  max-width: 400px;
+  width: 90%;
+}
+
+.help-popup h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 20px;
+}
+
+.help-popup ol {
+  margin: 0 0 25px 20px;
+  color: var(--text-gray);
+}
+
+.help-popup li {
+  margin-bottom: 12px;
+  line-height: 1.4;
+  font-style: normal;
+}
+
+.help-popup .close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--text-gray);
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.help-popup .close-btn:hover {
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
+}
+
+/* Mejorar los botones de seleccionar */
+.device-item .btn {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  border: none;
+  min-width: 120px;
+}
+
+.device-item .btn:hover {
+  background-color: var(--dark-blue);
+}
+
+/* Estilos para la pantalla de captura con cámara activa */
+.capture-page-camera-active {
+  background: var(--white);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow-medium);
+  max-width: none;
+}
+
+.capture-page-camera-active h1 {
+  display: block;
+}
+
+.camera-capture-header {
+  margin-bottom: 40px;
+}
+
+.camera-capture-header .step-title-with-help {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.camera-capture-header .step-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 15px;
+  margin-top: 25px;
+}
+
+.camera-capture-header .help-btn-small {
+  background-color: var(--medium-gray);
+  color: var(--text-gray);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.camera-capture-header .help-btn-small:hover {
+  background-color: var(--text-gray);
+  color: var(--white);
+}
+
+.camera-capture-header .step-description {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-gray);
+  font-style: normal;
+  margin-bottom: 15px;
+}
+
+/* Controles de cámara reorganizados */
+.camera-controls-redesigned {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  gap: 20px;
+}
+
+.camera-controls-redesigned .btn-secondary {
+  background-color: transparent;
+  color: var(--primary-blue);
+  border: 2px solid var(--primary-blue);
+}
+
+.camera-controls-redesigned .btn-secondary:hover {
+  background-color: var(--primary-blue);
+  color: var(--white);
+}
+
+/* Popup mejorado para identificación */
+.help-popup h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--dark-gray);
+  margin-bottom: 20px;
+}
+
+.help-popup ul {
+  margin: 0 0 25px 20px;
+  color: var(--text-gray);
+  list-style-type: disc;
+}
+
+.help-popup ul li {
+  margin-bottom: 12px;
+  line-height: 1.4;
+  font-style: normal;
+}
+
+/* Popup mejorado con imagen */
+.help-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--white);
+  border: 1px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  padding: 40px;
+  box-shadow: var(--shadow-large);
+  z-index: 1000;
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* Responsividad para el popup */
+@media (min-width: 1600px) {
+  .help-popup {
+    max-width: 1000px;
+    padding: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .help-popup {
+    width: 95%;
+    padding: 25px;
+    max-height: 90vh;
+  }
+}
+
+/* Responsividad para pantallas grandes */
+@media (min-width: 1600px) {
+  .capture-page-initial,
+  .capture-page-device-selection,
+  .capture-page-camera-active {
+    padding: 60px 80px;
+  }
+  
+  .capture-page-initial h1 {
+    font-size: 2.5rem;
+  }
+  
+  .step-title {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .capture-page-initial,
+  .capture-page-device-selection,
+  .capture-page-camera-active {
+    padding: 25px;
+  }
+  
+  .step-title {
+    font-size: 1.3rem;
+  }
+}

@@ -1,0 +1,70 @@
+/* Responsive design */
+@media (max-width: 1400px) {
+  .result-img {
+    height: calc(100vh - 270px);
+    max-height: 400px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .json-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .result-page.reviewing {
+    padding-bottom: 110px;
+  }
+}
+
+@media (max-width: 768px) {
+  .result-container {
+    flex-direction: column;
+  }
+  
+  .result-img {
+    height: 200px;
+    max-height: 200px;
+  }
+  
+  .json-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .resolution-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn-resolution {
+    width: 90%;
+    max-width: 300px;
+  }
+  
+  .device-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .upload-progress {
+    padding: 5px;
+  }
+  
+  .progress-bar {
+    height: 15px;
+  }
+  
+  .review-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .btn-edit-field,
+  .btn-check-field {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .result-page.reviewing {
+    padding-bottom: 90px;
+  }
+}
