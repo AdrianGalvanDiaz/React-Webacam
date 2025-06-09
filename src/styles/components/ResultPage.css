@@ -14,7 +14,7 @@
   font-weight: 600;
   color: var(--dark-gray);
   margin-bottom: 10px;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .result-page .back-link {
@@ -41,17 +41,17 @@
 }
 
 .result-page .subtitle {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 400;
   color: var(--text-gray);
   margin-bottom: 8px;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 .result-page .edit-note {
   font-size: 0.9rem;
   color: var(--text-gray);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 /* Cuando está en modo revisión, agregar espacio para el panel */
@@ -67,6 +67,7 @@
   flex: 1;
   overflow: hidden;
   min-height: 0;
+  position: relative;
 }
 
 .data-section {
@@ -88,6 +89,7 @@
   align-items: center;
   background: var(--white);
   padding: 20px;
+  padding-top: 120px; /* Agregar esta línea en lugar de top: 100px */
   overflow: hidden;
   position: relative;
 }
@@ -98,7 +100,7 @@
   box-shadow: var(--shadow-medium);
   object-fit: cover;
   height: auto;
-  max-height: 350px;
+  max-height: 500px;
 }
 
 .image-section .id-title {
@@ -197,6 +199,7 @@
   display: flex;
   gap: 10px;
   flex-shrink: 0;
+  z-index: 10; /* Agregar esta línea */
 }
 
 .btn-edit {
@@ -247,6 +250,7 @@
 .btn-continue {
   background-color: var(--primary-blue);
   color: var(--white);
+  min-width: 120px;
 }
 
 .btn-continue:hover {
@@ -310,4 +314,97 @@
   font-weight: 700;
   color: var(--dark-gray);
   margin-bottom: 15px;
+}
+
+/* Sistema responsivo dinámico para campos */
+@media (max-height: 800px) {
+  .json-key {
+    font-size: 16px;
+  }
+  
+  .json-value {
+    font-size: 18px;
+  }
+  
+  .json-input {
+    font-size: 18px;
+    padding: 8px 10px;
+  }
+  
+  .json-field {
+    padding: 6px;
+  }
+  
+  .result-img {
+    max-height: 300px;
+  }
+}
+
+@media (max-height: 700px) {
+  .json-key {
+    font-size: 14px;
+  }
+  
+  .json-value {
+    font-size: 16px;
+  }
+  
+  .json-input {
+    font-size: 16px;
+    padding: 6px 8px;
+  }
+  
+  .json-field {
+    padding: 4px;
+    gap: 2px;
+  }
+  
+  .json-grid {
+    gap: 8px;
+  }
+  
+  .result-img {
+    max-height: 250px;
+  }
+}
+
+@media (max-height: 600px) {
+  .json-key {
+    font-size: 12px;
+  }
+  
+  .json-value {
+    font-size: 14px;
+  }
+  
+  .json-input {
+    font-size: 14px;
+    padding: 4px 6px;
+  }
+  
+  .json-field {
+    padding: 3px;
+    gap: 1px;
+  }
+  
+  .json-grid {
+    gap: 6px;
+  }
+  
+  .result-img {
+    max-height: 200px;
+  }
+}
+
+/* Para pantallas muy anchas, hacer la imagen más grande */
+@media (min-width: 1400px) and (min-height: 900px) {
+  .result-img {
+    max-height: 500px;
+  }
+}
+
+@media (min-width: 1600px) and (min-height: 1000px) {
+  .result-img {
+    max-height: 600px;
+  }
 }

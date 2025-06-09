@@ -70,7 +70,7 @@ const FinalPopup = ({
         <div className="popup-buttons">
           {hasEverCopied && (
             <button onClick={startNewCapture} className="btn btn-retake-new">
-              Nueva Captura
+              Finalizar
             </button>
           )}
         </div>
