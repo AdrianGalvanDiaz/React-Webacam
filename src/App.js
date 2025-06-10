@@ -11,7 +11,7 @@ import FinalPopup from './components/Popups/FinalPopup';
 import QualityWarning from './components/Popups/QualityWarning';
 
 function App() {
-  const USE_LOCAL_TEST_MODE = true; // Constante global - cambiar a false para usar API real
+  const USE_LOCAL_TEST_MODE = false; // Constante global - cambiar a false para usar API real
 
   // Estado para la navegación
   const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
@@ -339,10 +339,10 @@ try {
       formData.append('file', blob, 'capture.jpg');
 
       console.log('3. FormData creado con archivo');
-      console.log('4. Enviando POST a: http://35.184.12.114:8000/ai/predecir_ine_cpu');
+      console.log('4. Enviando POST a: http://34.134.172.206:8000/ai/predecir_ine_cpu');
 
       // Enviar el POST
-      const uploadResponse = await axios.post('http://35.184.12.114:8000/ai/predecir_ine_cpu', formData, {
+      const uploadResponse = await axios.post('http://34.134.172.206:8000/ai/predecir_ine_cpu', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
