@@ -1,0 +1,18 @@
+/* Import de la fuente Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Variables para colores - Paleta del cliente */
+:root {
+  --primary-blue: #1C42E8;
+  --dark-blue: #081754;
+  --medium-blue: #05297A;
+  --white: #FFFFFF;
+  --light-gray: #F5F5F5;
+  --medium-gray: #E0E0E0;
+  --dark-gray: #333333;
+  --text-gray: #666666;
+  --border-radius: 25px; /* Botones más redondeados como en el diseño */
+  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-large: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
