@@ -142,7 +142,7 @@ const CapturePage = ({
           {/* Indicadores de progreso de upload */}
           {uploading && (
             <div className="upload-progress">
-              <p>Subiendo imagen... {uploadProgress}%</p>
+              <p>{uploadProgress < 100 ? `Subiendo imagen... ${uploadProgress}%` : 'Esperando resultados...'}</p>
               <div className="progress-bar">
                 <div 
                   className="progress-bar-fill" 

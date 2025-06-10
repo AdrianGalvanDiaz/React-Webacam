@@ -339,10 +339,10 @@ try {
       formData.append('file', blob, 'capture.jpg');
 
       console.log('3. FormData creado con archivo');
-      console.log('4. Enviando POST a: http://34.134.172.206:8000/ai/predecir_ine_cpu');
+      console.log('4. Enviando POST a: http://34.134.172.206:8001/ai/predecir_ine_cpu');
 
       // Enviar el POST
-      const uploadResponse = await axios.post('http://34.134.172.206:8000/ai/predecir_ine_cpu', formData, {
+      const uploadResponse = await axios.post('http://34.134.172.206:8001/ai/predecir_ine_cpu', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
