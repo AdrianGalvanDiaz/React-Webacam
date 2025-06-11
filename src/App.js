@@ -26,6 +26,7 @@ function App() {
   // Estado para visibilidad de la guia
   const [showIdGuide, setShowIdGuide] = useState(false);
   const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [showTroubleshootPopup, setShowTroubleshootPopup] = useState(false);
   const [showInitialGuide, setShowInitialGuide] = useState(false);
 
   // Nuevo estado para el status de resolución
@@ -842,6 +843,8 @@ const handleFieldCheck = () => {
           setDevices={setDevices}
           showHelpPopup={showHelpPopup}
           setShowHelpPopup={setShowHelpPopup}
+          showTroubleshootPopup={showTroubleshootPopup}
+          setShowTroubleshootPopup={setShowTroubleshootPopup}
           isCameraReady={isCameraReady}
           showInitialGuide={showInitialGuide}
           confirmInitialGuide={confirmInitialGuide}          

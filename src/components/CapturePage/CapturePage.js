@@ -22,6 +22,8 @@ const CapturePage = ({
   setDevices,
   showHelpPopup,
   setShowHelpPopup,
+  setShowTroubleshootPopup,
+  showTroubleshootPopup,
   isCameraReady,
   showInitialGuide,
   confirmInitialGuide,  
@@ -60,7 +62,7 @@ const CapturePage = ({
             <p className="step-description">
               <strong>Selecciona de la lista la cámara que tenga la palabra "WEBCAM"</strong> en su nombre. Esta será la cámara utilizada para escanear el documento.
             </p>
-            <span className="help-link" onClick={() => setShowHelpPopup(true)}>
+            <span className="help-link" onClick={() => setShowTroubleshootPopup(true)}>
               No veo la cámara
             </span>
           </div>
@@ -237,6 +239,41 @@ const CapturePage = ({
                 </li>
                 <li style={{marginBottom: '10px', color: 'var(--text-gray)'}}>
                   <strong>Texto legible:</strong> Todos los caracteres se ven claros y nítidos
+                </li>
+              </ol>
+            </div>
+          </div>
+        </>
+      )}
+      {/* Popup de troubleshooting */}
+      {showTroubleshootPopup && (
+        <>
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 999
+          }} onClick={() => setShowTroubleshootPopup(false)}></div>
+          
+          <div className="help-popup">
+            <button className="close-btn" onClick={() => setShowTroubleshootPopup(false)}>
+              ×
+            </button>
+            <h3>¿No ves la cámara en las opciones?</h3>
+            
+            <div style={{marginTop: '20px'}}>
+              <ol style={{margin: '0', paddingLeft: '20px', lineHeight: '1.6'}}>
+                <li style={{marginBottom: '15px', color: 'var(--text-gray)'}}>
+                  <strong>Verifica si alguna de las opciones mostradas es la cámara.</strong>
+                </li>
+                <li style={{marginBottom: '15px', color: 'var(--text-gray)'}}>
+                  <strong>Verifica la conexión por USB a la computadora.</strong>
+                </li>
+                <li style={{marginBottom: '15px', color: 'var(--text-gray)'}}>
+                  <strong>Solicita apoyo del departamento de TI.</strong>
                 </li>
               </ol>
             </div>
