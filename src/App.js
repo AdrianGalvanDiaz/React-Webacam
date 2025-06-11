@@ -26,6 +26,7 @@ function App() {
   // Estado para visibilidad de la guia
   const [showIdGuide, setShowIdGuide] = useState(false);
   const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [showTroubleshootPopup, setShowTroubleshootPopup] = useState(false);
   const [showInitialGuide, setShowInitialGuide] = useState(false);
 
   // Nuevo estado para el status de resolución
@@ -339,10 +340,10 @@ try {
       formData.append('file', blob, 'capture.jpg');
 
       console.log('3. FormData creado con archivo');
-      console.log('4. Enviando POST a: http://34.134.172.206:8000/ai/predecir_ine_cpu');
+      console.log('4. Enviando POST a: http://34.134.172.206:8001/ai/predecir_ine_cpu');
 
       // Enviar el POST
-      const uploadResponse = await axios.post('http://34.134.172.206:8000/ai/predecir_ine_cpu', formData, {
+      const uploadResponse = await axios.post('http://34.134.172.206:8001/ai/predecir_ine_cpu', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -842,6 +843,8 @@ const handleFieldCheck = () => {
           setDevices={setDevices}
           showHelpPopup={showHelpPopup}
           setShowHelpPopup={setShowHelpPopup}
+          showTroubleshootPopup={showTroubleshootPopup}
+          setShowTroubleshootPopup={setShowTroubleshootPopup}
           isCameraReady={isCameraReady}
           showInitialGuide={showInitialGuide}
           confirmInitialGuide={confirmInitialGuide}          
