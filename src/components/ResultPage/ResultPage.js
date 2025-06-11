@@ -156,7 +156,6 @@ const ResultPage = ({
             {imgSrc && (
               <img src={imgSrc} alt="Captura de webcam" className="result-img" />
             )}
-            <h3 className="id-title">ID: {predictionData.id}</h3>
           </div>
         </>
       )}
