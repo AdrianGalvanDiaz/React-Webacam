@@ -12,6 +12,18 @@ import QualityWarning from './components/Popups/QualityWarning';
 
 function App() {
   const USE_LOCAL_TEST_MODE = false; // Constante global - cambiar a false para usar API real
+  // ===========================================
+  // CONFIGURACIÓN API
+  // INSTRUCCIONES PARA CAMBIOS:
+  // 1. Cambiar BACKEND_BASE_URL por la IP/dominio del servidor de producción
+  // 2. Verificar que los endpoints sean correctos en el backend
+  // 3. Para RFC: el endpoint final será BACKEND_BASE_URL + RFC_VALIDATION_ENDPOINT + "/" + RFC_INGRESADO
+  // 4. Cambiar USE_LOCAL_TEST_MODE a false para usar APIs reales
+  // 5. Descomentar las líneas TODO en validateRfc para habilitar validación real
+  // ===========================================
+  const BACKEND_BASE_URL = "http://34.134.172.206:8001"; // IP del backend - CAMBIAR SEGÚN ENTORNO
+  const PREDICTION_ENDPOINT = "/ai/predecir_ine_cpu"; // Endpoint para predicción de INE
+  const RFC_VALIDATION_ENDPOINT = "/rfc/validate_rfc"; // Endpoint para validación de RFC (agregar /{rfc} al final)
 
   // Estado para la navegación
   const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
@@ -340,10 +352,11 @@ try {
       formData.append('file', blob, 'capture.jpg');
 
       console.log('3. FormData creado con archivo');
-      console.log('4. Enviando POST a: http://34.134.172.206:8001/ai/predecir_ine_cpu');
+      const predictionUrl = `${BACKEND_BASE_URL}${PREDICTION_ENDPOINT}`;
+      console.log('4. Enviando POST a:', predictionUrl);
 
       // Enviar el POST
-      const uploadResponse = await axios.post('http://34.134.172.206:8001/ai/predecir_ine_cpu', formData, {
+      const uploadResponse = await axios.post(predictionUrl, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         },
@@ -637,10 +650,29 @@ const handleFieldCheck = () => {
         setRfcErrorMessage("RFC no válido");
       }
     } else {
-      // En modo real, solo validamos la longitud por ahora
-      // Aquí iría la validación con el backend
-      setRfcValidated(true);
-      setRfcError(false);
+      // En modo real, validar con el backend
+      try {
+        const rfcValidationUrl = `${BACKEND_BASE_URL}${RFC_VALIDATION_ENDPOINT}/${rfcText}`;
+        console.log('Validando RFC en:', rfcValidationUrl);
+        
+        // TODO: Implementar validación real con el backend
+        // const response = await axios.get(rfcValidationUrl);
+        // if (response.data.valid) {
+        //   setRfcValidated(true);
+        //   setRfcError(false);
+        // } else {
+        //   setRfcError(true);
+        //   setRfcErrorMessage(response.data.message || "RFC no válido");
+        // }
+        
+        // Por ahora, solo validamos la longitud
+        setRfcValidated(true);
+        setRfcError(false);
+      } catch (error) {
+        console.error('Error validando RFC:', error);
+        setRfcError(true);
+        setRfcErrorMessage("Error al validar RFC con el servidor");
+      }
     }
   };
 
