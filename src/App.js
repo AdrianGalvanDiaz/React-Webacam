@@ -11,7 +11,7 @@ import FinalPopup from './components/Popups/FinalPopup';
 import QualityWarning from './components/Popups/QualityWarning';
 
 function App() {
-  const USE_LOCAL_TEST_MODE = false; // Constante global - cambiar a false para usar API real
+  const USE_LOCAL_TEST_MODE = true; // Constante global - cambiar a false para usar API real
   // ===========================================
   // CONFIGURACIÓN API
   // INSTRUCCIONES PARA CAMBIOS:
