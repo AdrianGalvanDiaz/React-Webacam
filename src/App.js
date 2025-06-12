@@ -24,7 +24,7 @@ function App() {
   const BACKEND_BASE_URL = "http://34.134.172.206:8001"; // IP del backend - CAMBIAR SEGÚN ENTORNO
   const PREDICTION_ENDPOINT = "/ai/extract_data_gpu"; // Endpoint para predicción de INE
   const RFC_VALIDATION_ENDPOINT = "/rfc/validate_rfc";
-  const SAVE_DATA_ENDPOINT = "/capture/save_captured_data"; // Endpoint para guardar datos capturados
+  const SAVE_DATA_ENDPOINT = "/capture/save_captured_data"; // Endpoint para guardar datos y obtener ID del servidor
 
   // Estado para la navegación
   const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
@@ -642,7 +642,7 @@ const handleFieldCheck = () => {
     
     if (USE_LOCAL_TEST_MODE) {
       // En modo local, validar solo con un RFC específico
-      if (rfcText === "GADA021008F35") {
+      if (rfcText === "RFC0123456789") {
         setRfcValidated(true);
         setRfcError(false);
       } else {
@@ -678,19 +678,100 @@ const handleFieldCheck = () => {
   };
 
   // Continuar después de validar RFC
-  const continueAfterRfc = () => {
+  const continueAfterRfc = async () => {
     setShowRfcPopup(false);
     setIdCopied(false);
     
     if (USE_LOCAL_TEST_MODE) {
-      console.log("Modo local: Mostrando popup final con datos dummy");
-      // Mostrar popup final
+      console.log("*** INICIO GUARDADO LOCAL ***");
+      console.log("Datos a guardar:", predictionData);
+      console.log("RFC validado:", rfcText);
+      
+      // Simular el payload que se enviaría al servidor
+      const simulatedPayload = {
+        ...predictionData,
+        rfc: rfcText,
+        timestamp: new Date().toISOString()
+      };
+      console.log("Payload simulado:", simulatedPayload);
+      
+      // Simular delay de red
+      console.log("Enviando datos al servidor...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Simular respuesta del servidor con ID generado
+      const simulatedServerResponse = {
+        success: true,
+        message: "Datos guardados exitosamente",
+        id: `CPL_${Date.now()}`, // ID simulado del servidor
+        captureId: `CPL_${Date.now()}`,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log("*** RESPUESTA SIMULADA DEL SERVIDOR ***");
+      console.log("Server response:", simulatedServerResponse);
+      
+      // Extraer el ID como lo haríamos en producción
+      const serverGeneratedId = simulatedServerResponse.id || simulatedServerResponse.captureId;
+      console.log("ID extraído del servidor:", serverGeneratedId);
+      
+      // Actualizar predictionData con el ID "del servidor"
+      setPredictionData(prevData => ({
+        ...prevData,
+        id: serverGeneratedId
+      }));
+      
+      console.log("*** GUARDADO LOCAL COMPLETADO ***");
+      console.log("ID final asignado:", serverGeneratedId);
+      
       setShowFinalPopup(true);
     } else {
-      // Aquí iría la integración con el backend para validar el RFC
-      console.log("En modo real: Aquí se implementará la validación con el backend");
-      // Por ahora, solo mostramos el popup final
-      setShowFinalPopup(true);
+      try {
+        console.log("*** INICIO GUARDADO EN SERVIDOR ***");
+        
+        // Preparar los datos para enviar
+        const dataToSave = {
+          ...predictionData,
+          rfc: rfcText,
+          timestamp: new Date().toISOString()
+        };
+        
+        console.log("Datos a enviar:", dataToSave);
+        
+        const saveUrl = `${BACKEND_BASE_URL}${SAVE_DATA_ENDPOINT}`;
+        console.log("URL de guardado:", saveUrl);
+        
+        const saveResponse = await axios.post(saveUrl, dataToSave, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log("*** GUARDADO EXITOSO ***");
+        console.log("Respuesta del servidor:", saveResponse.data);
+        
+        // El ID viene del servidor
+        const serverGeneratedId = saveResponse.data.id || saveResponse.data.captureId || `${Date.now()}`;
+        console.log("ID generado por servidor:", serverGeneratedId);
+        
+        // Actualizar predictionData con el ID del servidor
+        setPredictionData(prevData => ({
+          ...prevData,
+          id: serverGeneratedId
+        }));
+        
+        setShowFinalPopup(true);
+        
+      } catch (error) {
+        console.error("*** ERROR EN GUARDADO ***", error);
+        // En caso de error, usar ID local como fallback
+        const fallbackId = `LOCAL_${Date.now()}`;
+        setPredictionData(prevData => ({
+          ...prevData,
+          id: fallbackId
+        }));
+        setShowFinalPopup(true);
+      }
     }
   };
 
