@@ -1,1 +1,2 @@
-GADA021008F35
+// RFC dummy para testing local - modo desarrollo Front End
+RFC0123456789
