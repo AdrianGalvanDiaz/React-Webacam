@@ -22,8 +22,9 @@ function App() {
   // 5. Descomentar las líneas TODO en validateRfc para habilitar validación real
   // ===========================================
   const BACKEND_BASE_URL = "http://34.134.172.206:8001"; // IP del backend - CAMBIAR SEGÚN ENTORNO
-  const PREDICTION_ENDPOINT = "/ai/predecir_ine_cpu"; // Endpoint para predicción de INE
-  const RFC_VALIDATION_ENDPOINT = "/rfc/validate_rfc"; // Endpoint para validación de RFC (agregar /{rfc} al final)
+  const PREDICTION_ENDPOINT = "/ai/extract_data_gpu"; // Endpoint para predicción de INE
+  const RFC_VALIDATION_ENDPOINT = "/rfc/validate_rfc";
+  const SAVE_DATA_ENDPOINT = "/capture/save_captured_data"; // Endpoint para guardar datos capturados
 
   // Estado para la navegación
   const [currentPage, setCurrentPage] = useState('captura'); // 'captura' o 'resultado'
